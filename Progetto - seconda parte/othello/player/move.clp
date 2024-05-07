@@ -2,6 +2,7 @@
    (slot step)
    (slot row)
    (slot col)
+   (slot confidence)
 )
 
 (defrule guess-move
