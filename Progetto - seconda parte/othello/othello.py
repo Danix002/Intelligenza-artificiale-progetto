@@ -12,7 +12,7 @@ from board import Board
 import clips
 
 env = clips.Environment()
-env.load("othello_player.clp")
+env.load("player/othello_player.clp")
 env.reset()
 
 

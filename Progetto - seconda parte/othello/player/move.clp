@@ -1,29 +1,8 @@
-(deftemplate cell
-  (slot step)
-  (slot row)
-  (slot col)
-  (slot content (allowed-values empty white black))
-)
-
 (deftemplate move
    (slot step)
    (slot row)
    (slot col)
 )
-
-(deftemplate time
-  (slot step)
-)
-
-
-(deffacts initial-time
-   (time (step -1))
-)
-
-(defrule str (declare (salience 10))
-=>
-  (set-strategy depth)
- )
 
 (defrule guess-move
    ?t <- (time (step ?s))
@@ -40,8 +19,3 @@
 =>
    (retract ?m)
 )
-
-
-
-
-
