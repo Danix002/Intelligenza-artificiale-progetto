@@ -1,11 +1,14 @@
+(defmodule MOVE (export deftemplate ?ALL))
+
 (deftemplate move
    (slot step)
    (slot row)
    (slot col)
+   (slot cost)
    (slot confidence)
 )
 
-(defrule guess-move
+(defrule guess-move-random
    ?t <- (time (step ?s))
    (cell (step ?s) (row ?r) (col ?c) (content empty))
 =>

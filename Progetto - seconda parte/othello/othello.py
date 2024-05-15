@@ -86,10 +86,12 @@ class Othello(Board):
                   player by 1.
         '''
         if self.is_legal_move(self.move):
+            print( self.move)
             self.board[self.move[0]][self.move[1]] = self.current_player + 1
             self.num_tiles[self.current_player] += 1
             self.draw_tile(self.move, self.current_player)
             self.flip_tiles()
+            
     
     def flip_tiles(self):
         ''' Method: flip_tiles
@@ -184,10 +186,13 @@ class Othello(Board):
 
                   About input: move is a tuple of coordinates (row, col).
         '''
+        print( move, (move != () and self.is_valid_coord(move[0], move[1]) \
+           and self.board[move[0]][move[1]] == 0))
         if move != () and self.is_valid_coord(move[0], move[1]) \
            and self.board[move[0]][move[1]] == 0:
             for direction in MOVE_DIRS:
                 if self.has_tile_to_flip(move, direction):
+                    print("has tile to flip")
                     return True
         return False
 
@@ -219,7 +224,6 @@ class Othello(Board):
         turtle.onscreenclick(self.play)
         turtle.mainloop()
         
-
             
     def reviseClipsBoard(self):
         #env.reset()
@@ -236,14 +240,16 @@ class Othello(Board):
         
         cell = env.find_template('cell')
         for i in range(len(self.board)):
-    	    line = self.board[i]
-    	    for j in range(len(line)):
-    	      if(self.board[i][j]==0):
-    	        cell.assert_fact(step=s, row = i, col =j, content=clips.Symbol('empty'))
-    	      elif (self.board[i][j]==1):
-    	        cell.assert_fact(step=s, row = i, col =j, content=clips.Symbol('black'))
-    	      else:
-    	        cell.assert_fact(step=s, row = i, col =j, content=clips.Symbol('white'))
+            line = self.board[i]
+            for j in range(len(line)):
+                if(self.board[i][j]==0):
+                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('empty'))
+                elif(self.board[i][j]==1):
+                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('black'))
+                    print("cell BLACK: ", i, j)
+                else:
+                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('white'))
+                    print("cell WHITE: ", i, j)
 #        cells = cell.facts()
 #        for c in cells:
 #    	    print([*c])
@@ -253,7 +259,6 @@ class Othello(Board):
 #           break
 #        s=step[1]
 #        print(step)       	    
-     	       
 
     def play(self, x, y):
         ''' Method: play
@@ -283,7 +288,11 @@ class Othello(Board):
                 return
 
 
-
+        def bestMove(move_1, move_2):
+            if move_1[2] <= move_2[2]:
+                return move_1
+            else:
+                return move_2
         # Play the computer's turn
         while True:
             time = env.find_template('time')        
@@ -303,24 +312,36 @@ class Othello(Board):
                 template = env.find_template('move')   
                 moves = template.facts()
                 noMove = True
+                self.move = (0, 0,  10000.0 )
+                i = 0
                 for m in moves:
-                   [step, ro, co] = [*m]
-                   print("s ", step[1], "r ", ro[1], " c", co[1])
-                   self.move=(int(ro[1]), int(co[1]))
-                   if self.is_legal_move(self.move):
-                      turtle.onscreenclick(None)
-                      self.make_move()
-                      noMove = False
-                      break
+                   [step, ro, co, cost] = [*m]
+                   print("[", i, "] s ", step[1], "r ", ro[1], " c", co[1], " cost", cost[1])
+                   i = i + 1
+                   self.temp = bestMove(self.move, (int(ro[1]), int(co[1]), float(cost[1])))
+                   if self.is_legal_move(self.temp):
+                       print("is legal")
+                       self.move = self.temp
+                       noMove = False
+                      
+                print("###### fuori dal for ######")
                 if (noMove):
-                   return
+                    print("nessuna mossa")
+                    return
+                else:
+                    print("c'è una mossa")
+                    turtle.onscreenclick(None)
+                    self.make_move()
 		        
                 
                 
                 
                 self.current_player = 0
-                if self.has_legal_move():  
+                if self.has_legal_move(): 
+                    print("il player ha mosse legali")
                     break
+                else:
+                    print("il player non ha mosse legali")
             else:
                 break
         

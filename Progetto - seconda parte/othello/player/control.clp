@@ -1,3 +1,4 @@
+(defmodule CONTROL (export deftemplate ?ALL))
 (deftemplate time
   (slot step)
 )
