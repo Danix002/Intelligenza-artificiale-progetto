@@ -186,13 +186,13 @@ class Othello(Board):
 
                   About input: move is a tuple of coordinates (row, col).
         '''
-        print( move, (move != () and self.is_valid_coord(move[0], move[1]) \
-           and self.board[move[0]][move[1]] == 0))
+        #print( move, (move != () and self.is_valid_coord(move[0], move[1]) \
+         #  and self.board[move[0]][move[1]] == 0))
         if move != () and self.is_valid_coord(move[0], move[1]) \
            and self.board[move[0]][move[1]] == 0:
             for direction in MOVE_DIRS:
                 if self.has_tile_to_flip(move, direction):
-                    print("has tile to flip")
+                    #print("has tile to flip")
                     return True
         return False
 
@@ -308,7 +308,9 @@ class Othello(Board):
                 print('Computer\'s turn.')
                 #self.make_random_move()
                 self.reviseClipsBoard()  
-                env.run()       
+                print("running...")  
+                env.run()   
+                print("...runned")    
                 template = env.find_template('move')   
                 moves = template.facts()
                 noMove = True
@@ -316,20 +318,22 @@ class Othello(Board):
                 i = 0
                 for m in moves:
                    [step, ro, co, cost] = [*m]
-                   print("[", i, "] s ", step[1], "r ", ro[1], " c", co[1], " cost", cost[1])
+                   if(int(co[1]) == 1 and int(ro[1]) == 1 ):
+                       print("Caccapupu")
+                       print("[", i, "] s ", step[1], "r ", ro[1], " c", co[1], " cost", cost[1])
                    i = i + 1
                    self.temp = bestMove(self.move, (int(ro[1]), int(co[1]), float(cost[1])))
                    if self.is_legal_move(self.temp):
-                       print("is legal")
+                       #print("is legal")
                        self.move = self.temp
                        noMove = False
                       
-                print("###### fuori dal for ######")
+                #print("###### fuori dal for ######")
                 if (noMove):
-                    print("nessuna mossa")
+                    #print("nessuna mossa")
                     return
                 else:
-                    print("c'è una mossa")
+                    #print("c'è una mossa")
                     turtle.onscreenclick(None)
                     self.make_move()
 		        

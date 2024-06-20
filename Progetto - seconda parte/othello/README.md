@@ -30,3 +30,13 @@ The game is played with black-and-white tiles on an 8x8 board. The object of the
 ## Disclaimer
 
 This is a personal project for *CS5001 Intensive Foundations of Computer Science* and a Git repository was not used originally. For maintaining academic integrity, please do NOT reuse any code in this repository if you are working on your project for a related course.
+
+
+(defrule guess-move-random
+   ?t <- (time (step ?s))
+   (cell (step ?s) (row ?r) (col ?c) (content empty))
+=>
+   (bind ?s3 (+ ?s 1))
+   (assert (move (step ?s3) (row ?r) (col ?c)))
+   (modify ?t (step ?s))
+) 

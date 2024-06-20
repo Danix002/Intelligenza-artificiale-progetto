@@ -8,14 +8,7 @@
    (slot confidence)
 )
 
-(defrule guess-move-random
-   ?t <- (time (step ?s))
-   (cell (step ?s) (row ?r) (col ?c) (content empty))
-=>
-   (bind ?s3 (+ ?s 1))
-   (assert (move (step ?s3) (row ?r) (col ?c)))
-   (modify ?t (step ?s))
-) 
+
 
 (defrule forget-past-moves  
    (time (step ?s)) 
