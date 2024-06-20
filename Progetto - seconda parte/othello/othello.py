@@ -12,7 +12,10 @@ from board import Board
 import clips
 
 env = clips.Environment()
-env.load("player/othello_player.clp")
+#env.load("player/control.clp")
+#env.load("player/cell.clp")
+env.load("player/guess_move.clp")
+    
 env.reset()
 
 
@@ -86,7 +89,8 @@ class Othello(Board):
                   player by 1.
         '''
         if self.is_legal_move(self.move):
-            print( self.move)
+            #mossa legale
+            print("mossa legale", self.move)
             self.board[self.move[0]][self.move[1]] = self.current_player + 1
             self.num_tiles[self.current_player] += 1
             self.draw_tile(self.move, self.current_player)
@@ -227,13 +231,13 @@ class Othello(Board):
             
     def reviseClipsBoard(self):
         #env.reset()
-        time = env.find_template('time')
+        time = env.find_template("time")
         times=time.facts()
         
         t = next(times)
         [step] = [*t]
         s=step[1]+1
-        print(step)
+       
         t.retract()
         time.assert_fact(step = s)
         
@@ -246,10 +250,9 @@ class Othello(Board):
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('empty'))
                 elif(self.board[i][j]==1):
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('black'))
-                    print("cell BLACK: ", i, j)
                 else:
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('white'))
-                    print("cell WHITE: ", i, j)
+                    
 #        cells = cell.facts()
 #        for c in cells:
 #    	    print([*c])
@@ -295,7 +298,7 @@ class Othello(Board):
                 return move_2
         # Play the computer's turn
         while True:
-            time = env.find_template('time')        
+            time = env.find_template("time")    
             times=time.facts()
             for t in times:
               [step] = [*t] #step
@@ -308,9 +311,7 @@ class Othello(Board):
                 print('Computer\'s turn.')
                 #self.make_random_move()
                 self.reviseClipsBoard()  
-                print("running...")  
-                env.run()   
-                print("...runned")    
+                env.run()    
                 template = env.find_template('move')   
                 moves = template.facts()
                 noMove = True
