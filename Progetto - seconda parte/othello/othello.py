@@ -247,15 +247,18 @@ class Othello(Board):
             line = self.board[i]
             for j in range(len(line)):
                 if(self.board[i][j]==0):
-                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('empty'))
+                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('empty'), type=clips.Symbol('empty'))
                 elif(self.board[i][j]==1):
-                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('black'))
+                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('black'), type=clips.Symbol('empty'))
                 else:
-                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('white'))
+                    cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('white'), type=clips.Symbol('empty'))
+        #cells = cell.facts()
+        #for c in cells:
+             #[step, row, col, nearCorner, content, type] = [*c]
+            #inserisci tutti i campi
+             #print(step, row, col, nearCorner, content, type)
                     
-#        cells = cell.facts()
-#        for c in cells:
-#    	    print([*c])
+        
 #        times=time.facts()
 #        for t in times:
 #           [step] = [*t] #step
@@ -300,11 +303,14 @@ class Othello(Board):
         while True:
             time = env.find_template("time")    
             times=time.facts()
+            
             for t in times:
               [step] = [*t] #step
+              print(step)
+              
               break
             s=step[1]
-            print(step)
+            #print(step)
             
             self.current_player = 1
             if self.has_legal_move():
@@ -321,6 +327,9 @@ class Othello(Board):
                    [step, ro, co, cost] = [*m]
                    if(int(co[1]) == 1 and int(ro[1]) == 1 ):
                        print("Caccapupu")
+                       print("[", i, "] s ", step[1], "r ", ro[1], " c", co[1], " cost", cost[1])
+                   if(int(co[1]) == 0 and int(ro[1]) == 1 ):
+                       print("Caccasenza pupu")
                        print("[", i, "] s ", step[1], "r ", ro[1], " c", co[1], " cost", cost[1])
                    i = i + 1
                    self.temp = bestMove(self.move, (int(ro[1]), int(co[1]), float(cost[1])))
