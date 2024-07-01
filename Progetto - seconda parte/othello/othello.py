@@ -240,7 +240,7 @@ class Othello(Board):
        
         t.retract()
         time.assert_fact(step = s)
-        
+        print("----------NEW STEP %d----------", s)
         
         cell = env.find_template('cell')
         for i in range(len(self.board)):
