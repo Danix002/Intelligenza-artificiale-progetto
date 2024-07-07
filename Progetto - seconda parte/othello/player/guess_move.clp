@@ -263,13 +263,17 @@
 (defrule update-cost-of-certain-cell-C (declare (salience 8))
   ?t <- (time (step ?s))
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty) (type C))
-  ?b <- (white-border-counter (step ?s) (index ?i) (count ?cnt)) 
-  (test (or (eq ?i ?c) (eq ?i ?r)))
+  ?b <- (white-border-counter (step ?s) (position ?p ) (index ?i) (count ?cnt)) 
+  (test (or (and (eq ?p row) (eq ?i ?r))
+            (and (eq ?p col) (eq ?i ?c))))
   (test (< ?cnt 3))
 => 
   (bind ?new-cost 20)
   (modify ?cl (nearCorner ?new-cost))
+  (printout t "modify cell c " ?r "col " ?c "with counter " ?cnt " and r " ?r crlf)
 )
+
+
 
 (defrule guess-move 
   ?t <- (time (step ?s))
