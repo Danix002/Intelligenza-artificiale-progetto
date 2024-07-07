@@ -252,11 +252,13 @@ class Othello(Board):
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('black'), type=clips.Symbol('empty'))
                 else:
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('white'), type=clips.Symbol('empty'))
-        #cells = cell.facts()
-        #for c in cells:
-             #[step, row, col, nearCorner, content, type] = [*c]
+        cells = cell.facts()
+        for c in cells:
+             [step, row, col, nearCorner, content, type] = [*c]
+             if(int(step[1]) == int(s)-1):
+                print(step[1], row, col, nearCorner, content, type)
             #inserisci tutti i campi
-             #print(step, row, col, nearCorner, content, type)
+            #print(step, row, col, nearCorner, content, type)
                     
         
 #        times=time.facts()
@@ -264,7 +266,8 @@ class Othello(Board):
 #           [step] = [*t] #step
 #           break
 #        s=step[1]
-#        print(step)       	    
+#        print(step)       
+
 
     def play(self, x, y):
         ''' Method: play

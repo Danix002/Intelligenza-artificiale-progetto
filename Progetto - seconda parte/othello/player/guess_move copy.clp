@@ -139,37 +139,6 @@
     (modify ?cl (type C))
 )
 
-(defrule set-cell-type-B (declare(salience 10))
-    ?t <- (time (step ?s))
-    ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty) (type empty))
-    (test ( or (and (eq ?r 3) (eq ?c 0)) 
-               (and (eq ?r 4) (eq ?c 0)) 
-               (and (eq ?r 0) (eq ?c 3)) 
-               (and (eq ?r 0) (eq ?c 4)) 
-               (and (eq ?r 3) (eq ?c 7)) 
-               (and (eq ?r 4) (eq ?c 7)) 
-               (and (eq ?r 7) (eq ?c 3)) 
-               (and (eq ?r 7) (eq ?c 4))   
-           ) )
-   => 
-    (modify ?cl (type B))
-)
-
-(defrule set-cell-type-A(declare(salience 10))
-    ?t <- (time (step ?s))
-    ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty) (type empty))
-    (test ( or (and (eq ?r 0) (eq ?c 2)) 
-               (and (eq ?r 0) (eq ?c 5)) 
-               (and (eq ?r 2) (eq ?c 0)) 
-               (and (eq ?r 5) (eq ?c 0)) 
-               (and (eq ?r 6) (eq ?c 2)) 
-               (and (eq ?r 6) (eq ?c 5)) 
-               (and (eq ?r 2) (eq ?c 7)) 
-               (and (eq ?r 5) (eq ?c 7))     
-               ))
-   => 
-    (modify ?cl (type A))
-)
 
 
 (defrule update-cost-of-certain-cell-X (declare (salience 8))

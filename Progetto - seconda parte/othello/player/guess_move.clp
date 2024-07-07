@@ -9,6 +9,11 @@
   (slot step)
 )
 
+(deftemplate cell-direction
+    (slot row)
+    (slot col)
+)
+
 (deffacts initial-time
    (time (step -1))
 )
@@ -25,14 +30,27 @@
   (slot col)
   (slot nearCorner)
   (slot content (allowed-values empty white black))
-  (slot type (allowed-values empty COR C A B X))
+  (slot type (allowed-values empty COR C A B X F))
 )
+
+
 
 (deftemplate white-border-counter
   (slot step)
   (slot position) 
   (slot index) 
   (slot count)
+)
+
+(deffacts cell-directions
+  (cell-direction (row -1) (col -1))
+  (cell-direction (row -1) (col 0))
+  (cell-direction (row -1) (col +1))
+  (cell-direction (row  0) (col -1))
+  (cell-direction (row  0) (col +1))
+  (cell-direction (row +1) (col -1))
+  (cell-direction (row +1) (col 0))
+  (cell-direction (row +1) (col +1))
 )
 
 (deffacts initialize-white-border-counters
@@ -67,7 +85,7 @@
 =>
   (modify ?b (count (+ ?cnt 1)))
   (assert (counted-cell (step ?s) (row 0) (col ?col)))
-  (printout t "step " ?s " Counted white cell at row " row ", col 0, new count: " (+ ?cnt 1) crlf)
+  (printout t "step " ?s " Counted white cell at row 0 , col" ?col", new count: " (+ ?cnt 1) crlf)
 )
 
 (defrule count-white-border-cells-row-7 
@@ -80,7 +98,7 @@
 =>
   (modify ?b (count (+ ?cnt 1)))
   (assert (counted-cell (step ?s) (row 7) (col ?col)))
-  (printout t "step " ?s " Counted white cell at row " row ", col 0, new count: " (+ ?cnt 1) crlf)
+  (printout t "step " ?s " Counted white cell at row  row 7 , col "?col", new count: " (+ ?cnt 1) crlf)
 )
 
 (defrule count-white-border-cells-col-0 
@@ -187,13 +205,31 @@
              (and (eq ?r 0) (eq ?c 5)) 
              (and (eq ?r 2) (eq ?c 0)) 
              (and (eq ?r 5) (eq ?c 0)) 
-             (and (eq ?r 6) (eq ?c 2)) 
-             (and (eq ?r 6) (eq ?c 5)) 
+             (and (eq ?r 7) (eq ?c 2)) 
+             (and (eq ?r 7) (eq ?c 5)) 
              (and (eq ?r 2) (eq ?c 7)) 
              (and (eq ?r 5) (eq ?c 7))))
 =>
   (modify ?cl (type A))
 )
+
+(defrule set-cell-type-F (declare (salience 11))
+    ?t <- (time (step ?s))
+    ?cl <- (cell (step ?s) (row ?r) (col ?c) (content ?cont) (type empty))
+    (test (not (eq ?cont empty)))
+    ?dir <- (cell-direction (row ?rdir) (col ?cdir))
+    ?c1dir <- (cell (step ?s) (row ?nr) (col ?nc) (content empty))
+    (test (and (eq ?nr (+ ?r ?rdir)) (eq ?nc (+ ?c ?cdir))))
+  =>
+    (modify ?cl (type F))
+    (printout t "c1dir: row " ?nr ", col " ?nc crlf)
+    (bind ?nr (+ ?r ?rdir))
+    (bind ?nc (+ ?c ?cdir))
+    (printout t "nrow " ?nr " nrcol " ?nc crlf)
+    (printout t "step " ?s " cell modified: row " ?r ", col " ?c ", because direction row " ?rdir ", col " ?cdir crlf)
+)
+
+
 
 (defrule set-cell-type-cor (declare (salience 12))
   ?t <- (time (step ?s))
@@ -207,7 +243,6 @@
 (defrule update-cost-of-cell (declare (salience 9))
   ?t <- (time (step ?s))
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty) (type empty))
-  (test (not (or (and (eq ?r 1) (eq ?c 1)) (and (eq ?r 6) (eq ?c 6)) (and (eq ?r 1) (eq ?c 6)) (and (eq ?r 6) (eq ?c 1)))))
 =>
   (bind ?dist-top-left (sqrt (+ (** (- 0 ?r) 2) (** (- 0 ?c) 2))) )
   (bind ?dist-top-right (sqrt (+ (** (- 0 ?r) 2) (** (- 7 ?c) 2))) )
