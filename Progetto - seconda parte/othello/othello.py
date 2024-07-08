@@ -6,8 +6,11 @@
 '''
 
 import score, turtle, random
+import tkinter as tk
+from tkinter import ttk
 from board import Board
-
+from PIL import Image, ImageTk
+import customtkinter
 
 import clips
 
@@ -53,6 +56,7 @@ class Othello(Board):
         Board.__init__(self, n)
         self.current_player = 0
         self.num_tiles = [2, 2]
+        self.difficulty = None
 
     def initialize_board(self):
         ''' Method: initialize_board
@@ -223,10 +227,14 @@ class Othello(Board):
             print('Error: unknown player. Quit...')
             return
         
-        self.current_player = 0
-        print('Your turn.')
-        turtle.onscreenclick(self.play)
-        turtle.mainloop()
+        if self.difficulty is None:
+            self.draw_difficulty_banner()
+        else:
+            self.current_player = 0
+            print('Your turn.')
+            turtle.onscreenclick(self.play)
+            turtle.mainloop()
+  
         
             
     def reviseClipsBoard(self):
@@ -428,6 +436,8 @@ class Othello(Board):
 
         return printable_str
 
+
+
     def __eq__(self, other):
         '''
             Compares two instances. 
@@ -436,3 +446,96 @@ class Othello(Board):
         '''
         return Board.__eq__(self, other) and self.current_player == \
         other.current_player
+        
+    def draw_difficulty_banner(self):
+        ''' Function: draw_difficulty_banner
+            Parameters: self
+            Returns: nothing
+            Does: Draws dialog windows where the player can choose the difficulty level. The dialog window must be over the board and the board isn't usable
+        '''
+        customtkinter.set_appearance_mode("dark")  # Modes: system (default), light, dark
+        customtkinter.set_default_color_theme("dark-blue")  # Themes: blue (default), dark-blue, green
+
+        self.root = customtkinter.CTk()
+        self.root.title("Choose Difficulty Level")
+        self.root.geometry("400x400")
+
+  
+        #set text color orange
+        label = customtkinter.CTkLabel(self.root, text="Select Difficulty",  font=("Helvetica", 24))
+        label.pack(pady=40)
+
+        self.difficulty = tk.StringVar(value="Easy")
+
+        easy_rb = customtkinter.CTkRadioButton(self.root, text="Easy", variable=self.difficulty, value="Easy",                          	
+                                                                                                    #width=50,
+                                                                                                    #height=50,
+                                                                                                    radiobutton_width=20,
+                                                                                                    radiobutton_height=20,
+                                                                                                    corner_radius=3,
+                                                                                                    border_width_unchecked = 2,
+                                                                                                    border_width_checked=3,
+                                                                                                    border_color="white",
+                                                                                                    hover_color="lightblue",
+                                                                                                    fg_color="blue",
+                                                                                                    hover=True,
+                                                                                                    text_color="white",
+                                                                                                    font=("Helvetica", 18),
+                                                                                                    state="normal",
+                                                                                                    text_color_disabled="blue")
+        easy_rb.pack(anchor=tk.W, padx=20, pady=10)
+
+        hard_rb = customtkinter.CTkRadioButton(self.root, text="Hard", variable=self.difficulty, value="Hard",
+                                                                                                    #width=50,
+                                                                                                    #height=50,
+                                                                                                    radiobutton_width=20,
+                                                                                                    radiobutton_height=20,
+                                                                                                    corner_radius=3,
+                                                                                                    border_width_unchecked = 2,
+                                                                                                    border_width_checked=3,
+                                                                                                    border_color="white",
+                                                                                                    hover_color="lightblue",
+                                                                                                    fg_color="blue",
+                                                                                                    hover=True,
+                                                                                                    text_color="white",
+                                                                                                    font=("Helvetica", 18),
+                                                                                                    state="normal",
+                                                                                                    text_color_disabled="blue")
+        hard_rb.pack(anchor=tk.W, padx=20, pady=10)
+        
+        vhard_rb = customtkinter.CTkRadioButton(self.root, text="Very Hard", variable=self.difficulty, value="veryHard",
+                                                                                            #width=50,
+                                                                                            #height=50,
+                                                                                            radiobutton_width=20,
+                                                                                            radiobutton_height=20,
+                                                                                            corner_radius=3,
+                                                                                            border_width_unchecked = 2,
+                                                                                            border_width_checked=3,
+                                                                                            border_color="white",
+                                                                                            hover_color="lightblue",
+                                                                                            fg_color="blue",
+                                                                                            hover=True,
+                                                                                            text_color="white",
+                                                                                            font=("Helvetica", 18),
+                                                                                            state="normal",
+                                                                                            text_color_disabled="blue")
+        vhard_rb.pack(anchor=tk.W, padx=20, pady=10)
+
+        start_button = customtkinter.CTkButton(self.root, border_color= "black", border_width=3, text="Start Game", command=self.start_game, font=("Helvetica", 22))
+        start_button.pack(pady=20)
+
+        self.root.mainloop()
+            
+    def start_game(self):
+        self.difficulty = self.difficulty.get()
+        print(f"Selected Difficulty: {self.difficulty}")
+        
+        #close the dialog window
+        self.root.destroy()
+        self.draw_board()
+        self.initialize_board()
+        # Starts playing the game
+        # The user makes a move by clicking one of the squares on the board
+        # The computer makes a random legal move every time
+        # Game is over when there are no more lagal moves or the board is full
+        self.run()
