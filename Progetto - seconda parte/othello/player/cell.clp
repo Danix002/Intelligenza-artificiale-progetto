@@ -1,4 +1,4 @@
-(defmodule CELL (import CONTROL ?ALL) (export  ?ALL) )
+(defmodule CELL (import CONTROL ?ALL) (export  ?ALL))
 
 (deffacts initial-time
    (time (step -1))

@@ -28,6 +28,15 @@
   (slot col)
 )
 
+(deftemplate selected-cell-frontier-counter
+  (slot step)
+  (multislot start_cell (row) (col))
+  (multislot destination_cell (row) (col))
+  (slot count_frontier)
+  (multislot direction (row) (col))
+  (slot distance)
+)
+
 (deftemplate cell
   (slot step)
   (slot row)
@@ -36,8 +45,6 @@
   (slot content (allowed-values empty white black))
   (slot type (allowed-values empty COR C A B X F))
 )
-
-
 
 (deftemplate white-border-counter
   (slot step)
@@ -77,6 +84,110 @@
   (assert (white-border-counter (step ?s) (position col) (index 0) (count 0)))
   (assert (white-border-counter (step ?s) (position col) (index 7) (count 0)))
   (printout t "Initialized white border counters for step " ?s crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-bottom
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (< ?r1 ?r2) (eq ?c1 ?c2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 1) (col 0)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter bottom " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-top
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (> ?r1 ?r2) (eq ?c1 ?c2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row -1) (col 0)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter top " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-left
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (> ?c1 ?c2) (eq ?r1 ?r2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 0) (col -1)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-right
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (< ?c1 ?c2) (eq ?r1 ?r2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 0) (col 1)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-diagonal-first-left
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (> ?c1 ?c2) (> ?r1 ?r2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row -1) (col -1)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter diagonal first left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-diagonal-first-right
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (< ?c1 ?c2) (< ?r1 ?r2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 1) (col 1)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter diagonal first right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-diagonal-second-left
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (< ?c1 ?c2) (> ?r1 ?r2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row -1) (col 1)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter diagonal second left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+)
+
+(defrule initialize-selected-cell-frontier-counter-diagonal-second-right
+  (declare (salience 11))
+  ?t <- (time (step ?s))
+  ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
+  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  (test (and (> ?c1 ?c2) (< ?r1 ?r2)))
+  (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
+=>
+  (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 1) (col -1)) (distance ?distance)))
+  (printout t "Initialized selected cell frontier counter diagonal second right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
 (defrule count-white-border-cells-row-0 
@@ -162,8 +273,6 @@
   (printout t "Retracted past counter at step " ?s3 crlf)
 )
 
-
-
 (defrule set-cell-type-X (declare (salience 12))
   ?t <- (time (step ?s))
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a)  (type empty))
@@ -248,10 +357,10 @@
   ?t <- (time (step ?s))
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty) (type empty))
 =>
-  (bind ?dist-top-left (sqrt (+ (** (- 0 ?r) 2) (** (- 0 ?c) 2))) )
-  (bind ?dist-top-right (sqrt (+ (** (- 0 ?r) 2) (** (- 7 ?c) 2))) )
-  (bind ?dist-bottom-left (sqrt (+ (** (- 7 ?r) 2) (** (- 0 ?c) 2))) )
-  (bind ?dist-bottom-right (sqrt (+ (** (- 7 ?r) 2) (** (- 7 ?c) 2))) )
+  (bind ?dist-top-left (sqrt (+ (** (- 0 ?r) 2) (** (- 0 ?c) 2))))
+  (bind ?dist-top-right (sqrt (+ (** (- 0 ?r) 2) (** (- 7 ?c) 2))))
+  (bind ?dist-bottom-left (sqrt (+ (** (- 7 ?r) 2) (** (- 0 ?c) 2))))
+  (bind ?dist-bottom-right (sqrt (+ (** (- 7 ?r) 2) (** (- 7 ?c) 2))))
   (bind ?new-cost (min ?dist-top-left ?dist-top-right ?dist-bottom-left ?dist-bottom-right))
   (modify ?cl (nearCorner ?new-cost))
 )

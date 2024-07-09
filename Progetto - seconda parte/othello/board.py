@@ -26,10 +26,10 @@ class Board:
                     tile_size, an integer for size of the radius of the tile
                     tile_colors, a list of strings for colors of the tile
                     move, a tuple for coordinates of the player's next move
-        n (integer) is required in the __init__ function
-        board (list), square_size (integer), board_color (string), 
-        line_color (string), tile_size (integer), tile_colors (list), 
-        move (tuple) are not taken in the __init__
+                    n (integer) is required in the __init__ function
+                    board (list), square_size (integer), board_color (string), 
+                    line_color (string), tile_size (integer), tile_colors (list), 
+                    move (tuple) are not taken in the __init__
 
         Methods: draw_board, draw_lines, is_on_board, is_on_line, 
                  convert_coord, get_coord, get_tile_start_pos, draw_tile, 

@@ -8,11 +8,8 @@
 import othello
 
 def main():
-    # Initializes the game
     game = othello.Othello()
     game.draw_difficulty_banner()
-
-
 
 
 main()
