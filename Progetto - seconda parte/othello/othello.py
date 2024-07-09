@@ -5,6 +5,7 @@
     November 28, 2018
 '''
 
+from asyncio import sleep
 import score, turtle, random
 import tkinter as tk
 from tkinter import ttk
@@ -79,7 +80,9 @@ class Othello(Board):
             col = initial_squares[i][1]
             self.board[row][col] = color + 1
             self.draw_tile(initial_squares[i], color)
-            
+        
+
+
         
     
     def make_move(self):
@@ -239,6 +242,12 @@ class Othello(Board):
             
     def reviseClipsBoard(self):
         #env.reset()
+        game_difficulty = env.find_template('game-difficulty')
+        game_difficulty.assert_fact(difficulty=clips.Symbol(self.difficulty))
+        diff = game_difficulty.facts()
+        for d in diff:
+            [difficulty] = [*d]
+            print(difficulty)  
         time = env.find_template("time")
         times=time.facts()
         
@@ -266,8 +275,7 @@ class Othello(Board):
              if(int(step[1]) == int(s)-1):
                 print(step[1], row, col, nearCorner, content, type)
             #inserisci tutti i campi
-            #print(step, row, col, nearCorner, content, type)
-                    
+            #print(step, row, col, nearCorner, content, type)          
         
 #        times=time.facts()
 #        for t in times:
@@ -467,7 +475,7 @@ class Othello(Board):
 
         self.difficulty = tk.StringVar(value="Easy")
 
-        easy_rb = customtkinter.CTkRadioButton(self.root, text="Easy", variable=self.difficulty, value="Easy",                          	
+        easy_rb = customtkinter.CTkRadioButton(self.root, text="Easy", variable=self.difficulty, value="easy",                          	
                                                                                                     #width=50,
                                                                                                     #height=50,
                                                                                                     radiobutton_width=20,
@@ -485,7 +493,7 @@ class Othello(Board):
                                                                                                     text_color_disabled="blue")
         easy_rb.pack(anchor=tk.W, padx=20, pady=10)
 
-        hard_rb = customtkinter.CTkRadioButton(self.root, text="Hard", variable=self.difficulty, value="Hard",
+        hard_rb = customtkinter.CTkRadioButton(self.root, text="Hard", variable=self.difficulty, value="hard",
                                                                                                     #width=50,
                                                                                                     #height=50,
                                                                                                     radiobutton_width=20,
@@ -503,7 +511,7 @@ class Othello(Board):
                                                                                                     text_color_disabled="blue")
         hard_rb.pack(anchor=tk.W, padx=20, pady=10)
         
-        vhard_rb = customtkinter.CTkRadioButton(self.root, text="Very Hard", variable=self.difficulty, value="veryHard",
+        vhard_rb = customtkinter.CTkRadioButton(self.root, text="Very Hard", variable=self.difficulty, value="vhard",
                                                                                             #width=50,
                                                                                             #height=50,
                                                                                             radiobutton_width=20,
@@ -525,13 +533,15 @@ class Othello(Board):
         start_button.pack(pady=20)
 
         self.root.mainloop()
-            
+        
     def start_game(self):
-        self.difficulty = self.difficulty.get()
-        print(f"Selected Difficulty: {self.difficulty}")
         
         #close the dialog window
         self.root.destroy()
+        self.difficulty = self.difficulty.get()
+        print(f"Selected Difficulty: {self.difficulty}")
+        
+        
         self.draw_board()
         self.initialize_board()
         # Starts playing the game
@@ -539,3 +549,4 @@ class Othello(Board):
         # The computer makes a random legal move every time
         # Game is over when there are no more lagal moves or the board is full
         self.run()
+        

@@ -9,6 +9,10 @@
   (slot step)
 )
 
+(deftemplate game-difficulty
+  (slot difficulty (allowed-values easy hard vhard))
+)
+
 (deftemplate cell-direction
     (slot row)
     (slot col)
