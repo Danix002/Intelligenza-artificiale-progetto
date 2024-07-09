@@ -30,10 +30,10 @@
 
 (deftemplate selected-cell-frontier-counter
   (slot step)
-  (multislot start_cell (row) (col))
-  (multislot destination_cell (row) (col))
+  (multislot start_cell)
+  (multislot destination_cell)
   (slot count_frontier)
-  (multislot direction (row) (col))
+  (multislot direction)
   (slot distance)
 )
 
@@ -92,10 +92,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (< ?r1 ?r2) (eq ?c1 ?c2)))
+  ?direction <- (cell-direction(row 1)  (col 0))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 1) (col 0)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter bottom " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
@@ -105,10 +106,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (> ?r1 ?r2) (eq ?c1 ?c2)))
+  ?direction <- (cell-direction(row -1)  (col 0))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row -1) (col 0)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter top " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
@@ -118,10 +120,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (> ?c1 ?c2) (eq ?r1 ?r2)))
+  ?direction <-(cell-direction (row 0) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 0) (col -1)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
@@ -131,10 +134,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (< ?c1 ?c2) (eq ?r1 ?r2)))
+  ?direction <- (cell-direction (row 0) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 0) (col 1)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
@@ -144,10 +148,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (> ?c1 ?c2) (> ?r1 ?r2)))
+  ?direction <- (cell-direction (row -1) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row -1) (col -1)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal first left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
@@ -157,10 +162,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (< ?c1 ?c2) (< ?r1 ?r2)))
+  ?direction <- (cell-direction (row 1) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 1) (col 1)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal first right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
@@ -170,10 +176,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (< ?c1 ?c2) (> ?r1 ?r2)))
+  ?direction <- (cell-direction (row -1) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row -1) (col 1)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal second left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
@@ -183,10 +190,11 @@
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
   ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
   (test (and (> ?c1 ?c2) (< ?r1 ?r2)))
+  ?direction <- (cell-direction (row 1) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell))))
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
-  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction (row 1) (col -1)) (distance ?distance)))
+  (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal second right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
 )
 
