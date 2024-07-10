@@ -206,6 +206,39 @@
             " col " (fact-slot-value ?direction col) crlf)
 )
 
+(defrule increment-cells-selected-frontier-counter
+  (declare (salience 10))
+  ?t <- (time (step ?s))
+  ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))
+  (test (< ?distance 0))
+  ?cell <- (cell (step ?s) (row ?r) (col ?c) (content white) (type ?type))
+  ;(test (and (eq r (+ (fact-slot-value ?direction row) (* (fact-slot-value ?direction row) ?distance))) 
+             ;(eq c (+ (fact-slot-value ?direction col) (* (fact-slot-value ?direction col) ?distance)))
+             ;(eq ?type F)
+  ;))
+=>
+  (bind ?counter (+ ?counter 1))
+  (bind ?distance (- ?distance 1))
+  (modify ?scfc (count_frontier ?counter) (distance ?distance))
+  (printout t "increment-cells-selected-frontier-counter distance " ?distance " counter " ?counter crlf)
+)
+
+(defrule increment-cells-selected-no-frontier-counter
+  (declare (salience 10))
+  ?t <- (time (step ?s))
+  ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))
+  (test (< ?distance 0))
+  ?cell <- (cell (step ?s) (row ?r) (col ?c) (content white) (type ?type))
+  ;(test (and (eq r (+ (fact-slot-value ?direction row) (* (fact-slot-value ?direction row) ?distance))) 
+             ;(eq c (+ (fact-slot-value ?direction col) (* (fact-slot-value ?direction col) ?distance)))
+             ;(not(eq ?type F))
+  ;))
+=>
+  (bind ?distance (- ?distance 1))
+  (modify ?scfc (distance ?distance))
+  (printout t "increment-cells-selected-no-frontier-counter distance " ?distance " counter " ?counter crlf)
+)
+
 (defrule count-white-border-cells-row-0 
   (declare (salience 11))
   ?t <- (time (step ?s))
