@@ -97,7 +97,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter bottom " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter bottom " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col) crlf)
 )
 
 (defrule initialize-selected-cell-frontier-counter-top
@@ -111,7 +112,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter top " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter top " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col)crlf)
 )
 
 (defrule initialize-selected-cell-frontier-counter-left
@@ -125,7 +127,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col) crlf)
 )
 
 (defrule initialize-selected-cell-frontier-counter-right
@@ -139,7 +142,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance  " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col) crlf)
 )
 
 (defrule initialize-selected-cell-frontier-counter-diagonal-first-left
@@ -153,7 +157,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter diagonal first left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter diagonal first left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance  " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col) crlf)
 )
 
 (defrule initialize-selected-cell-frontier-counter-diagonal-first-right
@@ -167,7 +172,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter diagonal first right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter diagonal first right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col) crlf)
 )
 
 (defrule initialize-selected-cell-frontier-counter-diagonal-second-left
@@ -181,7 +187,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter diagonal second left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter diagonal second left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance  " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col) crlf)
 )
 
 (defrule initialize-selected-cell-frontier-counter-diagonal-second-right
@@ -195,7 +202,8 @@
 =>
   (bind ?distance (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
-  (printout t "Initialized selected cell frontier counter diagonal second right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance crlf)
+  (printout t "Initialized selected cell frontier counter diagonal second right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
+            " col " (fact-slot-value ?direction col) crlf)
 )
 
 (defrule count-white-border-cells-row-0 
