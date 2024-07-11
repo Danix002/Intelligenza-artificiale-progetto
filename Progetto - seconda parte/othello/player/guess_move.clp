@@ -215,15 +215,24 @@
   ?t <- (time (step ?s))
   ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))
   (test (> ?distance 0))
-  ?cell <- (cell (step ?s) (row ?r) (col ?c) (content white) (type F))
-  ;(test (and (eq r (+ (fact-slot-value ?direction row) (* (fact-slot-value ?direction row) ?distance))) 
-           ;  (eq c (+ (fact-slot-value ?direction col) (* (fact-slot-value ?direction col) ?distance)))
-  ;))
+  ?cell <- (cell (step ?s) (row ?r) (col ?c) (content black) (type F))
+  (test (and (eq ?r (+ (fact-slot-value ?start_cell row) (*  ?distance (fact-slot-value ?direction row))))
+             (eq ?c (+ (fact-slot-value ?start_cell col) (*  ?distance (fact-slot-value ?direction col))))
+         
+  ))
 =>
   (bind ?counter (+ ?counter 1))
   (bind ?distance (- ?distance 1))
   (modify ?scfc (count_frontier ?counter) (distance ?distance))
-  (printout t "increment-cells-selected-frontier-counter distance " ?distance " counter " ?counter crlf)
+  (printout t "increment-cells-selected-no-frontier-counter: "
+            "step: " ?s
+            " | start cell: (row: " (fact-slot-value ?start_cell row) ", col: " (fact-slot-value ?start_cell col) ")"
+            " | destination cell: (row: " (fact-slot-value ?destination_cell row) ", col: " (fact-slot-value ?destination_cell col) ")"
+            " | current cell: (row: " ?r ", col: " ?c ")"
+            " | counter: " ?counter
+            " | direction: (row: " (fact-slot-value ?direction row) ", col: " (fact-slot-value ?direction col) ")"
+            " | new distance: " ?distance
+            crlf)
 )
 
 (defrule increment-cells-selected-no-frontier-counter
@@ -231,15 +240,23 @@
   ?t <- (time (step ?s))
   ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))
   (test (> ?distance 0))
-  ?cell <- (cell (step ?s) (row ?r) (col ?c) (content white) (type ?type))
-  ;(test (and (eq r (+ (fact-slot-value ?direction row) (* (fact-slot-value ?direction row) ?distance))) 
-            ; (eq c (+ (fact-slot-value ?direction col) (* (fact-slot-value ?direction col) ?distance)))
-             ;(not(eq ?type F))
-  ;))
+  ?cell <- (cell (step ?s) (row ?r) (col ?c) (content ?c) (type ?type))
+  (test (and (eq ?r (+ (fact-slot-value ?start_cell row) (*  ?distance (fact-slot-value ?direction row))))
+             (eq ?c (+ (fact-slot-value ?start_cell col) (*  ?distance (fact-slot-value ?direction col))))
+             (not (eq ?type F))
+             (not (eq ?c black))))
 =>
   (bind ?distance (- ?distance 1))
   (modify ?scfc (distance ?distance))
-  (printout t "increment-cells-selected-no-frontier-counter distance " ?distance " counter " ?counter crlf)
+  (printout t "increment-cells-selected-no-frontier-counter: "
+            "step: " ?s
+            " | start cell: (row: " (fact-slot-value ?start_cell row) ", col: " (fact-slot-value ?start_cell col) ")"
+            " | destination cell: (row: " (fact-slot-value ?destination_cell row) ", col: " (fact-slot-value ?destination_cell col) ")"
+            " | current cell: (row: " ?r ", col: " ?c ")"
+            " | counter: " ?counter
+            " | direction: (row: " (fact-slot-value ?direction row) ", col: " (fact-slot-value ?direction col) ")"
+            " | new distance: " ?distance
+            crlf)
 )
 
 (defrule count-white-border-cells-row-0 
@@ -435,21 +452,31 @@
 => 
   (bind ?new-cost 20)
   (modify ?cl (nearCorner ?new-cost))
-  (printout t "modify cell c " ?r "col " ?c "with counter " ?cnt " and r " ?r crlf)
+  ;(printout t "modify cell c " ?r "col " ?c "with counter " ?cnt " and r " ?r crlf)
 )
 
 
 (defrule update-cell-selected-cost
   (declare (salience 7))
   ?t <- (time (step ?s))
+  ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a))
   ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))
-  (test (<= ?distance 0))
-  ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content ?cont) (type ?t))
   (test (and (eq ?r (fact-slot-value ?start_cell row)) (eq ?c (fact-slot-value ?start_cell col))))
+  (test (eq ?distance 0))
 =>
   (bind ?new-cost (+ ?a ?counter))
+  (modify ?scfc (distance -1))
   (modify ?cl (nearCorner ?new-cost))
-  (printout t "update-cell-SELECTED-cost: modify cell c " ?r "col " ?c "with counter " ?counter" and r " ?r crlf)
+    (printout t "update-cell-selected-cost: "
+             "step: " ?s
+             " | start cell: (row: " (fact-slot-value ?start_cell row) ", col: " (fact-slot-value ?start_cell col) ")"
+             " | destination cell: (row: " (fact-slot-value ?destination_cell row) ", col: " (fact-slot-value ?destination_cell col) ")"
+             " | current cell: (row: " ?r ", col: " ?c ")"
+             " | counter: " ?counter
+             " | direction: (row: " (fact-slot-value ?direction row) ", col: " (fact-slot-value ?direction col) ")"
+             " | old nearCorner: " ?a
+             " | new nearCorner: " ?new-cost
+             crlf)
 )
 
 (defrule guess-move 
