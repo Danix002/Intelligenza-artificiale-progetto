@@ -95,7 +95,7 @@
   ?direction <- (cell-direction(row 1)  (col 0))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell)(direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2)))))
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter bottom " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col) crlf)
@@ -110,7 +110,7 @@
   ?direction <- (cell-direction(row -1)  (col 0))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2))))) 
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter top " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col)crlf)
@@ -125,7 +125,7 @@
   ?direction <- (cell-direction (row 0) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2)))))
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col) crlf)
@@ -140,7 +140,7 @@
   ?direction <- (cell-direction (row 0) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2)))))
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance  " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col) crlf)
@@ -156,7 +156,9 @@
   ?direction <- (cell-direction (row -1) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2)))))
+  
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
+
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal first left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance  " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col) crlf)
@@ -172,7 +174,7 @@
   ?direction <- (cell-direction (row 1) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2)))))
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal first right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col) crlf)
@@ -188,7 +190,7 @@
   ?direction <- (cell-direction (row -1) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2)))))
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal second left " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance  " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col) crlf)
@@ -204,7 +206,7 @@
   ?direction <- (cell-direction (row 1) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
-  (bind ?distance (round (sqrt (+ (** (- ?r2 ?r1) 2) (** (- ?c2 ?c1) 2)))))
+  (bind ?distance (-  (max (abs (- ?r2 ?r1)) (abs (- ?c2 ?c1) ) ) 1)  )
   (assert (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier 0) (direction ?direction) (distance ?distance)))
   (printout t "Initialized selected cell frontier counter diagonal second right " ?s " start cell row " ?r1 " col " ?c1 " destination cell row " ?r2 " col " ?c2 " distance " ?distance " direction: row " (fact-slot-value ?direction row) 
             " col " (fact-slot-value ?direction col) crlf)
@@ -215,16 +217,16 @@
   ?t <- (time (step ?s))
   ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))
   (test (> ?distance 0))
+
   ?cell <- (cell (step ?s) (row ?r) (col ?c) (content black) (type F))
   (test (and (eq ?r (+ (fact-slot-value ?start_cell row) (*  ?distance (fact-slot-value ?direction row))))
-             (eq ?c (+ (fact-slot-value ?start_cell col) (*  ?distance (fact-slot-value ?direction col))))
-         
+             (eq ?c (+ (fact-slot-value ?start_cell col) (*  ?distance (fact-slot-value ?direction col))))      
   ))
 =>
   (bind ?counter (+ ?counter 1))
   (bind ?distance (- ?distance 1))
   (modify ?scfc (count_frontier ?counter) (distance ?distance))
-  (printout t "increment-cells-selected-no-frontier-counter: "
+  (printout t "increment-cells-selected-frontier-counter: "
             "step: " ?s
             " | start cell: (row: " (fact-slot-value ?start_cell row) ", col: " (fact-slot-value ?start_cell col) ")"
             " | destination cell: (row: " (fact-slot-value ?destination_cell row) ", col: " (fact-slot-value ?destination_cell col) ")"
@@ -241,10 +243,14 @@
   ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))
   (test (> ?distance 0))
   ?cell <- (cell (step ?s) (row ?r) (col ?c) (content ?c) (type ?type))
-  (test (and (eq ?r (+ (fact-slot-value ?start_cell row) (*  ?distance (fact-slot-value ?direction row))))
-             (eq ?c (+ (fact-slot-value ?start_cell col) (*  ?distance (fact-slot-value ?direction col))))
-             (not (eq ?type F))
-             (not (eq ?c black))))
+  (test 
+    (and 
+      (eq ?r (+ (fact-slot-value ?start_cell row) (*  ?distance (fact-slot-value ?direction row))))
+      (eq ?c (+ (fact-slot-value ?start_cell col) (*  ?distance (fact-slot-value ?direction col))))
+      (not (eq ?type F))
+      (not (eq ?c black))
+    )
+  )
 =>
   (bind ?distance (- ?distance 1))
   (modify ?scfc (distance ?distance))
