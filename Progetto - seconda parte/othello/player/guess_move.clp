@@ -224,10 +224,8 @@
              (distance ?distance&:(> ?distance 0)))
   ?cell <- (cell 
              (step ?s) 
-             (row ?r&:(eq ?r (+ (fact-slot-value ?start_cell row) 
-                                (* ?distance (fact-slot-value ?direction row)))))
-             (col ?c&:(eq ?c (+ (fact-slot-value ?start_cell col) 
-                                (* ?distance (fact-slot-value ?direction col)))))
+             (row ?r&:(eq ?r (+ (fact-slot-value ?start_cell row) (* ?distance (fact-slot-value ?direction row)))))
+             (col ?c&:(eq ?c (+ (fact-slot-value ?start_cell col) (* ?distance (fact-slot-value ?direction col)))))
              (content black) 
              (type F))
 =>
@@ -261,10 +259,8 @@
              (distance ?distance&:(> ?distance 0)))
   ?cell <- (cell 
              (step ?s) 
-             (row ?r&:(eq ?r (+ (fact-slot-value ?start_cell row) 
-                                (* ?distance (fact-slot-value ?direction row)))))
-             (col ?c&:(eq ?c (+ (fact-slot-value ?start_cell col) 
-                                (* ?distance (fact-slot-value ?direction col)))))
+             (row ?r&:(eq ?r (+ (fact-slot-value ?start_cell row) (* ?distance (fact-slot-value ?direction row)))))
+             (col ?c&:(eq ?c (+ (fact-slot-value ?start_cell col) (* ?distance (fact-slot-value ?direction col)))))
              (content ?content&:(not (eq ?content black)))
              (type ?type&:(not (eq ?type F))))
 =>
@@ -284,6 +280,7 @@
             " | new distance: " ?new-distance
             crlf)
 )
+
 (defrule count-white-border-cells-row-0 
   (declare (salience 11))
   ?t <- (time (step ?s))
@@ -335,7 +332,6 @@
   (assert (counted-cell (step ?s) (row ?row) (col 7)))
   (printout t "step " ?s "Counted white cell at row " ?row ", col 7, new count: " (+ ?cnt 1) crlf)
 )
-
 
 (defrule count-white-border-cells-corner
   (declare (salience 11))
@@ -492,16 +488,16 @@
   (bind ?new-cost (+ ?a ?counter))
   (modify ?scfc (distance -1))
   (modify ?cl (nearCorner ?new-cost))
-    (printout t "update-cell-selected-cost: "
-             "step: " ?s
-             " | start cell: (row: " (fact-slot-value ?start_cell row) ", col: " (fact-slot-value ?start_cell col) ")"
-             " | destination cell: (row: " (fact-slot-value ?destination_cell row) ", col: " (fact-slot-value ?destination_cell col) ")"
-             " | current cell: (row: " ?r ", col: " ?c ")"
-             " | counter: " ?counter
-             " | direction: (row: " (fact-slot-value ?direction row) ", col: " (fact-slot-value ?direction col) ")"
-             " | old nearCorner: " ?a
-             " | new nearCorner: " ?new-cost
-             crlf)
+  (printout t "update-cell-selected-cost: "
+            "step: " ?s
+            " | start cell: (row: " (fact-slot-value ?start_cell row) ", col: " (fact-slot-value ?start_cell col) ")"
+            " | destination cell: (row: " (fact-slot-value ?destination_cell row) ", col: " (fact-slot-value ?destination_cell col) ")"
+            " | current cell: (row: " ?r ", col: " ?c ")"
+            " | counter: " ?counter
+            " | direction: (row: " (fact-slot-value ?direction row) ", col: " (fact-slot-value ?direction col) ")"
+            " | old nearCorner: " ?a
+            " | new nearCorner: " ?new-cost
+            crlf)
 )
 
 (defrule guess-move 
