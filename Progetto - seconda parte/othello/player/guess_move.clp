@@ -74,6 +74,7 @@
 (defrule initialize-white-border-counters 
   (declare (salience 12))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   (not (exists (white-border-counter (step ?s) (position row) (index 0))))
   (not (exists (white-border-counter (step ?s) (position row) (index 7))))
   (not (exists (white-border-counter (step ?s) (position col) (index 0))))
@@ -89,9 +90,9 @@
 (defrule initialize-selected-cell-frontier-counter-bottom
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (< ?r1 ?r2) (eq ?c1 ?c2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(< ?r1 ?r2)) (col ?c2&:(eq ?c1 ?c2)) (content white))
   ?direction <- (cell-direction(row 1)  (col 0))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell)(direction ?direction))))
 =>
@@ -104,9 +105,9 @@
 (defrule initialize-selected-cell-frontier-counter-top
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (> ?r1 ?r2) (eq ?c1 ?c2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(> ?r1 ?r2)) (col ?c2&:(eq ?c1 ?c2)) (content white))
   ?direction <- (cell-direction(row -1)  (col 0))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
@@ -119,9 +120,9 @@
 (defrule initialize-selected-cell-frontier-counter-left
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (> ?c1 ?c2) (eq ?r1 ?r2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(eq ?r1 ?r2)) (col ?c2&:(> ?c1 ?c2)) (content white))
   ?direction <- (cell-direction (row 0) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
@@ -134,9 +135,9 @@
 (defrule initialize-selected-cell-frontier-counter-right
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (< ?c1 ?c2) (eq ?r1 ?r2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(eq ?r1 ?r2)) (col ?c2&:(< ?c1 ?c2)) (content white))
   ?direction <- (cell-direction (row 0) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
@@ -149,11 +150,11 @@
 (defrule initialize-selected-cell-frontier-counter-diagonal-first-left
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (> ?c1 ?c2) (> ?r1 ?r2)))
-  (test (eq (- ?r1 ?c1) (- ?r2 ?c2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(> ?r1 ?r2)) (col ?c2&:(> ?c1 ?c2) &:(eq (- ?r1 ?c1) (- ?r2 ?c2))) (content white))
   ?direction <- (cell-direction (row -1) (col -1))
+  
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
   
@@ -167,10 +168,9 @@
 (defrule initialize-selected-cell-frontier-counter-diagonal-first-right
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (< ?c1 ?c2) (< ?r1 ?r2)))
-  (test (eq (- ?r1 ?c1) (- ?r2 ?c2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(< ?r1 ?r2)) (col ?c2&:(< ?c1 ?c2) &:(eq (- ?r1 ?c1) (- ?r2 ?c2))) (content white))
   ?direction <- (cell-direction (row 1) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
@@ -183,10 +183,9 @@
 (defrule initialize-selected-cell-frontier-counter-diagonal-second-left
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (< ?c1 ?c2) (> ?r1 ?r2)))
-  (test (eq (+ ?r1 ?c1) (+ ?r2 ?c2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(> ?r1 ?r2)) (col ?c2&:(< ?c1 ?c2) &:(eq (+ ?r1 ?c1) (+ ?r2 ?c2))) (content white))
   ?direction <- (cell-direction (row -1) (col 1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
@@ -199,10 +198,9 @@
 (defrule initialize-selected-cell-frontier-counter-diagonal-second-right
   (declare (salience 11))
   ?t <- (time (step ?s))
-  ?destination_cell <- (cell (step ?s) (row ?r2) (col ?c2) (content white))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?start_cell <- (cell (step ?s) (row ?r1) (col ?c1) (content empty))
-  (test (and (> ?c1 ?c2) (< ?r1 ?r2)))
-  (test (eq (+ ?r1 ?c1) (+ ?r2 ?c2)))
+  ?destination_cell <- (cell (step ?s) (row ?r2&:(< ?r1 ?r2)) (col ?c2&:(> ?c1 ?c2) &:(eq (+ ?r1 ?c1) (+ ?r2 ?c2))) (content white))
   ?direction <- (cell-direction (row 1) (col -1))
   (not (exists (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (direction ?direction))))
 =>
@@ -215,6 +213,7 @@
 (defrule increment-cells-selected-frontier-counter
   (declare (salience 10))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?scfc <- (selected-cell-frontier-counter 
              (step ?s) 
              (start_cell ?start_cell) 
@@ -244,12 +243,14 @@
             " | direction: (row: " (fact-slot-value ?direction row) 
             ", col: " (fact-slot-value ?direction col) ")"
             " | new distance: " ?new-distance
+            " |  color: " (fact-slot-value ?cell content)
             crlf)
 )
 
 (defrule increment-cells-selected-no-frontier-counter
   (declare (salience 10))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?scfc <- (selected-cell-frontier-counter 
              (step ?s) 
              (start_cell ?start_cell) 
@@ -284,6 +285,7 @@
 (defrule count-white-border-cells-row-0 
   (declare (salience 11))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?c <- (cell (step ?s) (row 0) (col ?col) (content white))
   (not (counted-cell (step ?s) (row 0) (col ?col)))
   ?b <- (white-border-counter (step ?s) (position row) (index 0) (count ?cnt))
@@ -297,6 +299,7 @@
 (defrule count-white-border-cells-row-7 
   (declare (salience 11))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?c <- (cell (step ?s) (row 7) (col ?col) (content white))
   (not (counted-cell (step ?s) (row 7) (col ?col)))
   ?b <- (white-border-counter (step ?s) (position row) (index 7) (count ?cnt))
@@ -310,6 +313,7 @@
 (defrule count-white-border-cells-col-0 
   (declare (salience 11))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?c <- (cell (step ?s) (row ?row) (col 0) (content white))
   (not (counted-cell (step ?s) (row ?row) (col 0)))
   ?b <- (white-border-counter (step ?s) (position col) (index 0) (count ?cnt))
@@ -323,6 +327,7 @@
 (defrule count-white-border-cells-col-7 
   (declare (salience 11))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?c <- (cell (step ?s) (row ?row) (col 7) (content white))
   (not (counted-cell (step ?s) (row ?row) (col 7)))
   ?b <- (white-border-counter (step ?s) (position col) (index 7) (count ?cnt))
@@ -336,6 +341,7 @@
 (defrule count-white-border-cells-corner
   (declare (salience 11))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?c <- (cell (step ?s) (row ?row) (col ?col) (content white) (type COR))
   ?b <- (white-border-counter (step ?s) (position row) (index ?row) (count ?rcnt))
   ?r <- (white-border-counter (step ?s) (position col) (index ?col) (count ?ccnt))
@@ -365,6 +371,7 @@
 
 (defrule set-cell-type-X (declare (salience 12))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a)  (type empty))
   (test (or (and (eq ?r 1) (eq ?c 1)) (and (eq ?r 6) (eq ?c 6)) (and (eq ?r 6) (eq ?c 1)) (and (eq ?r 1) (eq ?c 6))))
 =>
@@ -373,6 +380,7 @@
 
 (defrule set-cell-type-C (declare(salience 12))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (type empty))
   (test (or (and (eq ?r 1) (eq ?c 0)) 
              (and (eq ?r 0) (eq ?c 1)) 
@@ -388,6 +396,7 @@
 
 (defrule set-cell-type-B (declare(salience 12))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (type empty))
   (test (or (and (eq ?r 3) (eq ?c 0)) 
              (and (eq ?r 4) (eq ?c 0)) 
@@ -403,6 +412,7 @@
 
 (defrule set-cell-type-A (declare(salience 12))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (type empty))
   (test (or (and (eq ?r 0) (eq ?c 2)) 
              (and (eq ?r 0) (eq ?c 5)) 
@@ -418,6 +428,7 @@
 
 (defrule set-cell-type-F (declare (salience 11))
     ?t <- (time (step ?s))
+    ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
     ?cl <- (cell (step ?s) (row ?r) (col ?c) (content ?cont) (type empty))
     (test (not (eq ?cont empty)))
     ?dir <- (cell-direction (row ?rdir) (col ?cdir))
@@ -436,6 +447,7 @@
 
 (defrule set-cell-type-cor (declare (salience 12))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a)  (type empty))
   (test (or (and (eq ?r 0) (eq ?c 7)) (and (eq ?r 7) (eq ?c 0)) (and (eq ?r 0) (eq ?c 0)) (and (eq ?r 7) (eq ?c 7))))
 =>
@@ -445,6 +457,7 @@
 
 (defrule update-cost-of-cell (declare (salience 9))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty) (type empty))
 =>
   (bind ?dist-top-left (sqrt (+ (** (- 0 ?r) 2) (** (- 0 ?c) 2))))
@@ -457,6 +470,7 @@
 
 (defrule update-cost-of-certain-cell-X (declare (salience 8))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty)  (type X))
 =>
   (bind ?new-cost 20)
@@ -465,6 +479,7 @@
 
 (defrule update-cost-of-certain-cell-C (declare (salience 8))
   ?t <- (time (step ?s))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a) (content empty) (type C))
   ?b <- (white-border-counter (step ?s) (position ?p ) (index ?i) (count ?cnt)) 
   (test (or (and (eq ?p row) (eq ?i ?r))
@@ -479,6 +494,7 @@
 
 (defrule update-cell-selected-cost
   (declare (salience 7))
+  ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
   ?t <- (time (step ?s))
   ?cl <- (cell (step ?s) (row ?r) (col ?c) (nearCorner ?a))
   ?scfc <- (selected-cell-frontier-counter (step ?s) (start_cell ?start_cell) (destination_cell ?destination_cell) (count_frontier ?counter) (direction ?direction) (distance ?distance))

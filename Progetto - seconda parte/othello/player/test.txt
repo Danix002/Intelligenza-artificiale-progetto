@@ -1,0 +1,60 @@
+
+
+
+/** template
+    start cell
+    destination cell
+        // filter
+        // solo bianche
+        // solo non vuote
+        // più vicina alla start
+        // nellla stessa riga / colonna / diagonali
+    count F
+    direction (
+                top, bottom, left, right, 
+                top-left, top-right, bottom-left, bottom-right
+              )
+    distance    
+**/
+
+
+
+
+// rule init-template
+        ->
+            create template
+                start A3
+                destinatiom G3
+                count = 0
+                direction = right
+                distance = 5
+
+// rule
+    // PRE COND:
+        template con distance != 0
+        checkCell con row = startcell.row + distance
+        checkCell.type == F
+    // DO:
+        template.count + 1
+        template.distance - 1
+
+
+// rule
+    // PRE COND:
+        template con distance != 0
+        checkCell con row = startcell.row + distance
+        checkCell.type != F
+    // DO:
+        template.distance - 1
+
+
+// rule
+    // PRE COND:
+        template con distance == 0
+    // DO:
+        template.distance = -1
+        startcell.cost + template.count
+        
+
+
+
