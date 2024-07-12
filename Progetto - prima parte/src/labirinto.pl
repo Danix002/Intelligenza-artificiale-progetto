@@ -1,57 +1,137 @@
-:- module(labirinto, [
-    initial_state/1,
-    goal_state/1,
-    move/2,
-    solve_labirinto/1
-]).
+wall(pos(0,0)).
+hammer(pos(0,1)).
+empty(pos(0,2)).
+empty(pos(0,3)).
+empty(pos(0,4)).
+empty(pos(0,5)).
+empty(pos(0,6)).
+gem(pos(0,7)).
 
-% Definizione dello stato iniziale: posizioni iniziali del mostriciattolo, martello, gemme e muri di ghiaccio.
-initial_state(state(pos(1,1), pos(8,8), pos(3,3), [pos(2,2), pos(4,4), pos(6,6)], [pos(3,2), pos(5,5)])).
+empty(pos(1,0)).
+empty(pos(1,1)).
+empty(pos(1,2)).
+empty(pos(1,3)).
+wall(pos(1,4)).
+empty(pos(1,5)).
+empty(pos(1,6)).
+empty(pos(1,7)).
 
-% Definizione dello stato obiettivo: raggiungere il portale
-goal_state(state(PosMostriciattolo, _, _, _, _)) :- portale(PosMostriciattolo).
+empty(pos(2,0)).
+portal(pos(2,1)).
+empty(pos(2,2)).
+empty(pos(2,3)).
+empty(pos(2,4)).
+empty(pos(2,5)).
+empty(pos(2,6)).
+empty(pos(2,7)).
 
-% Definizione del portale
-portale(pos(8,8)).
+empty(pos(3,0)).
+empty(pos(3,1)).
+empty(pos(3,2)).
+empty(pos(3,3)).
+empty(pos(3,4)).
+empty(pos(3,5)).
+empty(pos(3,6)).
+empty(pos(3,7)).
 
-% Movimento nelle quattro direzioni
-move(state(pos(X,Y), pos(Hx,Hy), Gems, IceWalls), state(pos(X2,Y2), pos(Hx,Hy), Gems, NewIceWalls)) :-
-    (X2 is X + 1, Y2 is Y; % sud
-     X2 is X - 1, Y2 is Y; % nord
-     X2 is X, Y2 is Y + 1; % est
-     X2 is X, Y2 is Y - 1), % ovest
-    valid_position(pos(X2,Y2), IceWalls, NewIceWalls).
+empty(pos(4,0)).
+empty(pos(4,1)).
+empty(pos(4,2)).
+wall(pos(4,3)).
+gem(pos(4,4)).
+empty(pos(4,5)).
+empty(pos(4,6)).
+empty(pos(4,7)).
 
-% Controllo della validità della posizione
-valid_position(pos(X,Y), IceWalls, NewIceWalls) :-
-    X >= 1, X =< 8, Y >= 1, Y =< 8, % entro i limiti del labirinto
-    ( \+ member(pos(X,Y), IceWalls) -> % non è un muro invalicabile
-      NewIceWalls = IceWalls ; % nessun cambiamento ai muri di ghiaccio
-      select(pos(X,Y), IceWalls, NewIceWalls)). % abbatti il muro di ghiaccio
+empty(pos(5,0)).
+empty(pos(5,1)).
+empty(pos(5,2)).
+empty(pos(5,3)).
+wall(pos(5,4)).
+wall(pos(5,5)).
+empty(pos(5,6)).
+wall(pos(5,7)).
 
-% Implementazione della BFS
-bfs(Start, Path) :-
-    bfs([[Start]], [], Path).
+empty(pos(6,0)).
+destroyable_wall(pos(6,1)).
+destroyable_wall(pos(6,2)).
+destroyable_wall(pos(6,3)).
+wall(pos(6,4)).
+empty(pos(6,5)).
+empty(pos(6,6)).
+monster_position(pos(6,7)).
 
-bfs([[State|Path]|_], _, [State|Path]) :-
-    goal_state(State).
+wall(pos(7,0)).
+gem(pos(7,1)).
+empty(pos(7,2)).
+empty(pos(7,3)).
+wall(pos(7,4)).
+wall(pos(7,5)).
+empty(pos(7,6)).
+empty(pos(7,7)).
+has_hammer(0).
 
-bfs([[State|Path]|Rest], Visited, Solution) :-
-    findall([Next,State|Path],
-            (move(State, Next),
-             \+ member(Next, Visited)),
-            NewPaths),
-    append(Rest, NewPaths, Queue),
-    bfs(Queue, [State|Visited], Solution).
 
-% Esecuzione dell'algoritmo BFS con lo stato iniziale
-solve_labirinto(Solution) :-
-    initial_state(Start),
-    bfs(Start, Path),
-    reverse(Path, Solution).
+applicable(nord,pos(R,C)) :-
+      monster_position(pos(R, C)),
+      R>1,
+      R1 is R-1,
+      not(wall(pos(R1, C))).
 
-% Stampa della soluzione trovata
-print_solution([]).
-print_solution([State|Rest]) :-
-    write(State), nl,
-    print_solution(Rest).
+applicable(nord,pos(R,C)) :-
+    monster_position(pos(R,C)),
+    R>1,
+    R1 is R-1,
+    destroyable_wall(pos(R1, C)),
+    has_hammer(N),
+    N > 0.
+
+
+applicable(nord,pos(R,C)) :-
+    gem(pos(R, C)), 
+    R>1,
+    R1 is R-1,
+    not(wall(pos(R1, C))),
+    not(destroyable_wall(pos(R1, C))).
+    
+
+
+
+ricerca(Cammino) :-
+    monster_position(S0),
+    findall(S, gem(S), Lpos),
+    profondity_search([monster_position|Lpos], Cammino).
+
+profondity_search(S,[]) :- portal(S), !.
+
+profondity_search(S, [Az|SeqAzioni]) :-
+    findall(P, applicable(nord, P), Lpos),
+    print(search),
+    print(Lpos),
+    trasform(Az, Lpos, L1pos),
+    print(L1pos).
+    %profondity_search(S1, SeqAzioni).
+
+
+trasform(nord, [ pos(R, C)| Tail ], L1pos) :- 
+    det_position(pos(R, C), R1),
+    trasform(nord, Tail, [pos(R1,C)|L1pos]).
+
+
+det_position(pos(R, C), R1) :- 
+    R>1,
+    R1 is R-1,
+    wall(pos(R1, C)).
+
+det_position(pos(R, C), R1) :- 
+    R>1,
+    R1 is R-1,
+    not(wall(pos(R1, C))),
+    det_position(pos(R1, C), R1).
+
+
+
+det_position(pos(R, C), R1) :- 
+    R=1.
+
+trasform(nord, [], L1pos).
