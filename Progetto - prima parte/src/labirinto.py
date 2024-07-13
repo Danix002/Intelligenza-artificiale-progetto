@@ -11,7 +11,6 @@ g = "gem"
 p = "portal"
 mp = "monster-position"
 
-
 # Configurazione del labirinto
 labirinto = [
     [w, h, " ", " ", " ", " ", " ", g],
@@ -64,13 +63,9 @@ def aggiorna_labirinto(labirinto, soluzione):
 # Funzione per risolvere il labirinto con Prolog
 def risolvi_labirinto():
     result = j.query('ricerca(Cammino)')
-    while result != None:
-        print(result)
-        result = result.next
+    print(result.state)
     """    
     if result:
-        print(result)
-        print(type(result))
         cammino = result.state
         aggiorna_labirinto(labirinto, cammino)
         canvas.delete("all")
