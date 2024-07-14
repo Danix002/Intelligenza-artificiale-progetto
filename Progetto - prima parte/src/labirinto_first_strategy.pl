@@ -189,17 +189,19 @@ findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
     findall_applicable_action(Tail, Result, [pos(T, R, C) | L1pos] , Az).
 
 findall_applicable_action([], Result, L1pos, _):-
-    Result is L1pos.
+    L1pos \== [],
+    Result = L1pos .
 
 findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
     \+ applicable(Az, pos(T, R, C)),
     findall_applicable_action(Tail, Result, L1pos, Az).
 
-trasform(nord, [pos(_, R, C)| Tail], Lpos) :- 
-    det_position_nord(pos(_, R, C), R1),
-    trasform(nord, Tail, [pos(_, R1, C)|Lpos]).
+trasform(nord, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+    det_position_nord(pos(T, R, C), R1),
+    HP = pos(T, R1, C),
+    trasform(nord, Tail, TP).
 
-trasform(nord, [], _).
+trasform(nord, [], []) :- true. 
 
 /**
 trasform(sud, [pos(_, R, C)| Tail], Lpos) :- 
