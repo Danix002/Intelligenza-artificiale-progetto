@@ -75,6 +75,11 @@ pos(wall, 7, 5).
 pos(empty, 7, 6).
 pos(empty, 7, 7).
 
+azione(nord).
+azione(sud).
+azione(est).
+azione(ovest).
+
 has_hammer(0).
 
 applicable(nord, pos(_, R,C)) :-
@@ -97,7 +102,8 @@ applicable(nord, pos(_, R,C)) :-
     R1 is R-1,
     pos(empty, R1, C).
     
-/**applicable(sud, pos(_, R,C)) :-
+/**
+applicable(sud, pos(_, R,C)) :-
     pos(monster_position, R, C),
     R<7,
     R1 is R+1,
@@ -160,7 +166,8 @@ applicable(ovest, pos(_, R,C)) :-
 applicable(pickup, pos(_, R,C)) :-
     pos(hammer, R, C),
     \+ has_hammer(N),
-    N1 is N+1.*/
+    N1 is N+1.
+*/
 
 ricerca(Cammino) :-
     pos(monster_position, R, C),
@@ -171,35 +178,47 @@ ricerca(Cammino) :-
 profondity_search(R, C, []) :- pos(portal, R, C), !.
 
 profondity_search(S, [Az|SeqAzioni]) :-
-    findall(S, applicable(Az, S), Lpos),
+    findall_applicable_action(S, Result, [], Az),
+    print(Result),
+    trasform(Az, Result, Lpos),
     print(Lpos),
-    trasform(Az, Lpos, L1pos),
-    print(L1pos),
-    profondity_search(L1pos, SeqAzioni).
+    profondity_search(Lpos, SeqAzioni).
 
-trasform(nord, [pos(_, R, C)| Tail], L1pos) :- 
+findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
+    applicable(Az, pos(T, R, C)),
+    findall_applicable_action(Tail, Result, [pos(T, R, C) | L1pos] , Az).
+
+findall_applicable_action([], Result, L1pos, _):-
+    Result is L1pos.
+
+findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
+    \+ applicable(Az, pos(T, R, C)),
+    findall_applicable_action(Tail, Result, L1pos, Az).
+
+trasform(nord, [pos(_, R, C)| Tail], Lpos) :- 
     det_position_nord(pos(_, R, C), R1),
-    trasform(nord, Tail, [pos(_, R1, C)|L1pos]).
+    trasform(nord, Tail, [pos(_, R1, C)|Lpos]).
 
 trasform(nord, [], _).
 
-/**trasform(sud, [pos(_, R, C)| Tail], L1pos) :- 
+/**
+trasform(sud, [pos(_, R, C)| Tail], Lpos) :- 
     det_position_sud(pos(_, R, C), R1),
-    trasform(sud, Tail, [pos(_, R1, C)|L1pos]).
+    trasform(sud, Tail, [pos(_, R1, C)|Lpos]).
 
-trasform(sud, [], L1pos).
+trasform(sud, [], Lpos).
 
-trasform(ovest, [pos(_, R, C)| Tail], L1pos) :- 
+trasform(ovest, [pos(_, R, C)| Tail], Lpos) :- 
     det_position_ovest(pos(_, R, C), C1),
-    trasform(ovest, Tail, [pos(_, R, C1)|L1pos]).
+    trasform(ovest, Tail, [pos(_, R, C1)|Lpos]).
 
-trasform(ovest, [], L1pos).
+trasform(ovest, [], Lpos).
 
-trasform(est, [pos(_, R, C)| Tail], L1pos) :- 
+trasform(est, [pos(_, R, C)| Tail], Lpos) :- 
     det_position_est(pos(_, R, C), C1),
-    trasform(est, Tail, [pos(_, R, C1)|L1pos]).
+    trasform(est, Tail, [pos(_, R, C1)|Lpos]).
 
-trasform(est, [], L1pos).*/
+trasform(est, [], Lpos).*/
 
 det_position_nord(pos(_, R, C), R1) :- 
     R > 1,
@@ -217,7 +236,8 @@ det_position_nord(pos(_, R, _), R1) :-
     R = 1,
     R1 is R.
 
-/**det_position_sud(pos(_, R, C), R1) :-
+/**
+det_position_sud(pos(_, R, C), R1) :-
     R < 7,
     RTMP is R - 1,
     pos(wall, RTMP, C),
