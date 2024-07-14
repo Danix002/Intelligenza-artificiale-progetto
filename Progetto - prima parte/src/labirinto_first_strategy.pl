@@ -203,24 +203,35 @@ trasform(nord, [pos(T, R, C)| Tail], [ HP | TP]) :-
 
 trasform(nord, [], []) :- true. 
 
-/**
-trasform(sud, [pos(_, R, C)| Tail], Lpos) :- 
-    det_position_sud(pos(_, R, C), R1),
-    trasform(sud, Tail, [pos(_, R1, C)|Lpos]).
 
-trasform(sud, [], Lpos).
+trasform(sud, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+    det_position_sud(pos(T, R, C), R1),
+    HP = pos(T, R1, C),
+    trasform(sud, Tail, TP).
 
-trasform(ovest, [pos(_, R, C)| Tail], Lpos) :- 
-    det_position_ovest(pos(_, R, C), C1),
-    trasform(ovest, Tail, [pos(_, R, C1)|Lpos]).
+trasform(sud, [], []):- true.
 
-trasform(ovest, [], Lpos).
+trasform(ovest, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+    det_position_ovest(pos(T, R, C), C1),
+    HP = pos(T, R, C1),
+    trasform(ovest, Tail, TP).
 
-trasform(est, [pos(_, R, C)| Tail], Lpos) :- 
-    det_position_est(pos(_, R, C), C1),
-    trasform(est, Tail, [pos(_, R, C1)|Lpos]).
+trasform(ovest, [], []) :- true.
 
-trasform(est, [], Lpos).*/
+trasform(est, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+    det_position_est(pos(T, R, C), C1),
+    HP = pos(T, R, C1),
+    trasform(est, Tail, TP).
+
+trasform(est, [], []) :- true.
+
+det_position_nord(pos(monster_positon, R, C), R1) :- 
+    R > 1,
+    RTMP is R - 1,
+    pos(destroyable_wall, RTMP, C),
+    has_hammer(N),
+    N > 0,
+    det_position_nord(pos(monster_position, RTMP, C), R1).
 
 det_position_nord(pos(_, R, C), R1) :- 
     R > 1,
@@ -238,7 +249,14 @@ det_position_nord(pos(_, R, _), R1) :-
     R = 1,
     R1 is R.
 
-/**
+det_position_sud(pos(monster_positon, R, C), R1) :- 
+    R < 7,
+    RTMP is R + 1,
+    pos(destroyable_wall, RTMP, C),
+    has_hammer(N),
+    N > 0,
+    det_position_sud(pos(monster_position, RTMP, C), R1).
+
 det_position_sud(pos(_, R, C), R1) :-
     R < 7,
     RTMP is R - 1,
@@ -255,6 +273,14 @@ det_position_sud(pos(_, R, _), R1) :-
     R = 7,
     R1 is R.
 
+det_position_ovest(pos(monster_positon, R, C), C1) :- 
+    C > 1,
+    CTMP is C - 1,
+    pos(destroyable_wall, R, CTMP),
+    has_hammer(N),
+    N > 0,
+    det_position_ovest(pos(monster_position, R, CTMP), C1).
+
 det_position_ovest(pos(_, R, C), C1) :-
     C > 1,
     CTMP is C - 1,
@@ -270,6 +296,14 @@ det_position_ovest(pos(_, R, C), C1) :-
 det_position_ovest(pos(_, _, C), C1) :-
     C = 1,
     C1 is C.
+
+det_position_est(pos(monster_positon, R, C), C1) :-
+    C < 7,
+    CTMP is C + 1,
+    pos(destroyable_wall, R, CTMP),
+    has_hammer(N),
+    N > 0,
+    det_position_est(pos(monster_position, R, CTMP), C1).
 
 det_position_est(pos(_, R, C), C1) :-
     C < 7,
@@ -289,4 +323,3 @@ det_position_est(pos(_, _, C), C1) :-
 
 
 
-*/
