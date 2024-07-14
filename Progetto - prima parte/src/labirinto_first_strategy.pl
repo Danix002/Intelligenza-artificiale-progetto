@@ -83,14 +83,14 @@ azione(ovest).
 has_hammer(0).
 
 applicable(nord, pos(_, R,C)) :-
-      pos(monster_position, R, C),
-      R > 1,
-      R1 is R - 1,
-      pos(empty, R1, C).
+    pos(monster_position, R, C),
+    R > 0,
+    R1 is R - 1,
+    pos(empty, R1, C).
 
 applicable(nord, pos(_, R,C)) :-
     pos(monster_position, R, C),
-    R > 1,
+    R > 0,
     R1 is R - 1,
     pos(destroyable_wall, R1, C),
     has_hammer(N),
@@ -98,75 +98,75 @@ applicable(nord, pos(_, R,C)) :-
 
 applicable(nord, pos(_, R,C)) :-
     pos(gem, R, C), 
-    R > 1,
+    R > 0,
     R1 is R-1,
     pos(empty, R1, C).
-    
-/**
+  
 applicable(sud, pos(_, R,C)) :-
     pos(monster_position, R, C),
-    R<7,
-    R1 is R+1,
+    R < 7,
+    R1 is R + 1,
     pos(empty, R1, C).
 
 applicable(sud, pos(_, R,C)) :-
     pos(monster_position, R, C),
-    R<7,
-    R1 is R+1,
+    R < 7,
+    R1 is R + 1,
     pos(destroyable_wall, R1, C),
     has_hammer(N),
     N > 0.
 
 applicable(sud, pos(_, R,C)) :-
     pos(gem, R, C),
-    R<7,
-    R1 is R+1,
+    R < 7,
+    R1 is R + 1,
     pos(empty, R1, C).
 
 applicable(est, pos(_, R,C)) :-
     pos(monster_position, R, C),
-    C<7,
-    C1 is C+1,
-    pos(empty, R1, C).
+    C < 7,
+    C1 is C + 1,
+    pos(empty, R, C1).
 
 applicable(est, pos(_, R,C)) :-
     pos(monster_position, R, C),
-    C<7,
-    C1 is C+1,
+    C < 7,
+    C1 is C + 1,
     pos(destroyable_wall, R, C1),
     has_hammer(N),
     N > 0.
 
 applicable(est, pos(_, R,C)) :-
     pos(gem, R, C),
-    C<7,
-    C1 is C+1,
-    pos(empty, R1, C).    
+    C < 7,
+    C1 is C + 1,
+    pos(empty, R, C1).    
 
 applicable(ovest, pos(_, R,C)) :-
     pos(monster_position, R, C),
-    C>1,
-    C1 is C-1,
-    pos(empty, R1, C).
+    C > 0,
+    C1 is C - 1,
+    pos(empty, R, C1).
 
 applicable(ovest, pos(_, R,C)) :-
     pos(monster_position, R, C),
-    C>1,
-    C1 is C-1,
-    pos(destroyable_wall,R, C1),
+    C > 0,
+    C1 is C - 1,
+    pos(destroyable_wall, R, C1),
     has_hammer(N),
     N > 0.
 
 applicable(ovest, pos(_, R,C)) :-
     pos(gem, R, C),
-    C>1,
-    C1 is C-1,
-    pos(empty, R1, C).
+    C > 0,
+    C1 is C - 1,
+    pos(empty, R, C1).
 
+/**
 applicable(pickup, pos(_, R,C)) :-
     pos(hammer, R, C),
-    \+ has_hammer(N),
-    N1 is N+1.
+    has_hammer(N),
+    N is N + 1.
 */
 
 ricerca(Cammino) :-
@@ -180,8 +180,9 @@ profondity_search(R, C, []) :- pos(portal, R, C), !.
 profondity_search(S, [Az|SeqAzioni]) :-
     findall_applicable_action(S, Result, [], Az),
     print(Result),
-    trasform(Az, Result, Lpos),
+    transform(Az, Result, Lpos),
     print(Lpos),
+    print(Az),
     profondity_search(Lpos, SeqAzioni).
 
 findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
@@ -196,37 +197,36 @@ findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
     \+ applicable(Az, pos(T, R, C)),
     findall_applicable_action(Tail, Result, L1pos, Az).
 
-trasform(nord, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+transform(nord, [pos(T, R, C)| Tail], [ HP | TP]) :- 
     det_position_nord(pos(T, R, C), R1),
     HP = pos(T, R1, C),
-    trasform(nord, Tail, TP).
+    transform(nord, Tail, TP).
 
-trasform(nord, [], []) :- true. 
+transform(nord, [], []) :- true.
 
-
-trasform(sud, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+transform(sud, [pos(T, R, C)| Tail], [ HP | TP]) :- 
     det_position_sud(pos(T, R, C), R1),
     HP = pos(T, R1, C),
-    trasform(sud, Tail, TP).
+    transform(sud, Tail, TP).
 
-trasform(sud, [], []):- true.
+transform(sud, [], []):- true.
 
-trasform(ovest, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+transform(ovest, [pos(T, R, C)| Tail], [ HP | TP]) :- 
     det_position_ovest(pos(T, R, C), C1),
     HP = pos(T, R, C1),
-    trasform(ovest, Tail, TP).
+    transform(ovest, Tail, TP).
 
-trasform(ovest, [], []) :- true.
+transform(ovest, [], []) :- true.
 
-trasform(est, [pos(T, R, C)| Tail], [ HP | TP]) :- 
+transform(est, [pos(T, R, C)| Tail], [HP | TP]) :- 
     det_position_est(pos(T, R, C), C1),
     HP = pos(T, R, C1),
-    trasform(est, Tail, TP).
+    transform(est, Tail, TP).
 
-trasform(est, [], []) :- true.
+transform(est, [], []) :- true.
 
 det_position_nord(pos(monster_positon, R, C), R1) :- 
-    R > 1,
+    R > 0,
     RTMP is R - 1,
     pos(destroyable_wall, RTMP, C),
     has_hammer(N),
@@ -234,19 +234,31 @@ det_position_nord(pos(monster_positon, R, C), R1) :-
     det_position_nord(pos(monster_position, RTMP, C), R1).
 
 det_position_nord(pos(_, R, C), R1) :- 
-    R > 1,
+    R > 0,
     RTMP is R - 1,
     pos(wall, RTMP, C),
     R1 is R.
 
+det_position_nord(pos(gem, R, C), R1) :- 
+    R > 0,
+    RTMP is R - 1,
+    pos(hammer, RTMP, C),
+    det_position_nord(pos(_, RTMP, C), R1).
+
+det_position_nord(pos(monster_position, R, C), R1) :- 
+    R > 0,
+    RTMP is R - 1,
+    pos(hammer, RTMP, C),
+    det_position_nord(pos(_, RTMP, C), R1).
+
 det_position_nord(pos(_, R, C), R1) :- 
-    R > 1,
+    R > 0,
     RTMP is R - 1,
     pos(empty, RTMP, C),
     det_position_nord(pos(_, RTMP, C), R1).
 
 det_position_nord(pos(_, R, _), R1) :- 
-    R = 1,
+    R = 0,
     R1 is R.
 
 det_position_sud(pos(monster_positon, R, C), R1) :- 
@@ -259,13 +271,25 @@ det_position_sud(pos(monster_positon, R, C), R1) :-
 
 det_position_sud(pos(_, R, C), R1) :-
     R < 7,
-    RTMP is R - 1,
+    RTMP is R + 1,
     pos(wall, RTMP, C),
     R1 is R.
 
+det_position_sud(pos(gem, R, C), R1) :-
+    R < 7,
+    RTMP is R + 1,
+    pos(hammer, RTMP, C),
+    det_position_sud(pos(_, RTMP, C), R1).
+
+det_position_sud(pos(monster_position, R, C), R1) :-
+    R < 7,
+    RTMP is R + 1,
+    pos(hammer, RTMP, C),
+    det_position_sud(pos(_, RTMP, C), R1).
+
 det_position_sud(pos(_, R, C), R1) :-
     R < 7,
-    R1 is R+1,
+    RTMP is R + 1,
     pos(empty, RTMP, C),
     det_position_sud(pos(_, RTMP, C), R1).
 
@@ -274,7 +298,7 @@ det_position_sud(pos(_, R, _), R1) :-
     R1 is R.
 
 det_position_ovest(pos(monster_positon, R, C), C1) :- 
-    C > 1,
+    C > 0,
     CTMP is C - 1,
     pos(destroyable_wall, R, CTMP),
     has_hammer(N),
@@ -282,19 +306,31 @@ det_position_ovest(pos(monster_positon, R, C), C1) :-
     det_position_ovest(pos(monster_position, R, CTMP), C1).
 
 det_position_ovest(pos(_, R, C), C1) :-
-    C > 1,
+    C > 0,
     CTMP is C - 1,
     pos(wall, R, CTMP),
     C1 is C.
 
+det_position_ovest(pos(gem, R, C), C1) :-
+    C > 0,
+    CTMP is C - 1,
+    pos(hammer, R, CTMP),
+    det_position_ovest(pos(_, R, CTMP), C1).
+
+det_position_ovest(pos(monster_position, R, C), C1) :-
+    C > 0,
+    CTMP is C - 1,
+    pos(hammer, R, CTMP),
+    det_position_ovest(pos(_, R, CTMP), C1).
+
 det_position_ovest(pos(_, R, C), C1) :-
-    C > 1,
-    C1 is C - 1,
+    C > 0,
+    CTMP is C - 1,
     pos(empty, R, CTMP),
     det_position_ovest(pos(_, R, CTMP), C1).
 
 det_position_ovest(pos(_, _, C), C1) :-
-    C = 1,
+    C = 0,
     C1 is C.
 
 det_position_est(pos(monster_positon, R, C), C1) :-
@@ -307,13 +343,25 @@ det_position_est(pos(monster_positon, R, C), C1) :-
 
 det_position_est(pos(_, R, C), C1) :-
     C < 7,
-    CTMP is C - 1,
+    CTMP is C + 1,
     pos(wall, R, CTMP),
     C1 is C.
 
+det_position_est(pos(gem, R, C), C1) :-
+    C < 7,
+    CTMP is C + 1,
+    pos(hammer, R, CTMP),
+    det_position_est(pos(_, R, CTMP), C1).
+
+det_position_est(pos(monster_position, R, C), C1) :-
+    C < 7,
+    CTMP is C + 1,
+    pos(hammer, R, CTMP),
+    det_position_est(pos(_, R, CTMP), C1).
+
 det_position_est(pos(_, R, C), C1) :-
     C < 7,
-    C1 is C+1,
+    CTMP is C + 1,
     pos(empty, R, CTMP),
     det_position_est(pos(_, R, CTMP), C1).
 
