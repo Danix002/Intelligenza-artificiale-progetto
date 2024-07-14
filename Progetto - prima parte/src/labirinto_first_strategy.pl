@@ -181,7 +181,7 @@ trasform(nord, [pos(_, R, C)| Tail], L1pos) :-
     det_position_nord(pos(_, R, C), R1),
     trasform(nord, Tail, [pos(_, R1, C)|L1pos]).
 
-trasform(nord, [], L1pos).
+trasform(nord, [], _).
 
 /**trasform(sud, [pos(_, R, C)| Tail], L1pos) :- 
     det_position_sud(pos(_, R, C), R1),
@@ -213,7 +213,7 @@ det_position_nord(pos(_, R, C), R1) :-
     pos(empty, RTMP, C),
     det_position_nord(pos(_, RTMP, C), R1).
 
-det_position_nord(pos(_, R, C), R1) :- 
+det_position_nord(pos(_, R, _), R1) :- 
     R = 1,
     R1 is R.
 
@@ -229,7 +229,7 @@ det_position_sud(pos(_, R, C), R1) :-
     pos(empty, RTMP, C),
     det_position_sud(pos(_, RTMP, C), R1).
 
-det_position_sud(pos(_, R, C), R1) :-
+det_position_sud(pos(_, R, _), R1) :-
     R = 7,
     R1 is R.
 
@@ -245,7 +245,7 @@ det_position_ovest(pos(_, R, C), C1) :-
     pos(empty, R, CTMP),
     det_position_ovest(pos(_, R, CTMP), C1).
 
-det_position_ovest(pos(_, R, C), C1) :-
+det_position_ovest(pos(_, _, C), C1) :-
     C = 1,
     C1 is C.
 
@@ -261,7 +261,7 @@ det_position_est(pos(_, R, C), C1) :-
     pos(empty, R, CTMP),
     det_position_est(pos(_, R, CTMP), C1).
 
-det_position_est(pos(_, R, C), C1) :-
+det_position_est(pos(_, _, C), C1) :-
     C = 7,
     C1 is C.
 

@@ -2,7 +2,7 @@ import tkinter as tk
 import janus_swi as j
 
 # Inizializza la sessione di Janus
-j.consult("C:\\Users\\danie\\Desktop\\GitHub\\Intelligenza-artificiale-progetto\\Progetto - prima parte\\src\\labirinto.pl")
+j.consult("labirinto_first_strategy.pl")
 
 w = "wall"
 h = "hammer"
