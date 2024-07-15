@@ -310,36 +310,51 @@ initTransform(ovest, [pos(monster_position, R, C)| Tail], Result) :-
 
 initTransform(est, [pos(monster_position, R, C)| Tail], Result) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
-    reverse(State, ReverseState),
+    reverse(State, ReverseState),   
     transform(est, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail]),
     move_monster_position_to_front(ResultTMP, Result).
 
 transform(nord, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_nord(pos(T, R, C), R1, State),
     HP = pos(T, R1, C),
-    transform(nord, Tail, TP, State).
+    update_value_in_list(HP, pos(T, R, C), [pos(T, R, C)| Tail], NewState),
+    transform(nord, Tail, TP, NewState).
 
 transform(nord, [], [], _) :- true.
 
 transform(sud, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_sud(pos(T, R, C), R1, State),
     HP = pos(T, R1, C),
-    transform(sud, Tail, TP, State).
+    update_value_in_list(HP, pos(T, R, C), [pos(T, R, C)| Tail], NewState),
+    transform(sud, Tail, TP, NewState).
 
 transform(sud, [], [], _):- true.
 
 transform(ovest, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_ovest(pos(T, R, C), C1, State),
     HP = pos(T, R, C1),
-    transform(ovest, Tail, TP, State).
+    update_value_in_list(HP, pos(T, R, C), [pos(T, R, C)| Tail], NewState),
+    transform(ovest, Tail, TP, NewState).
 
 transform(ovest, [], [], _) :- true.
 
 transform(est, [pos(T, R, C)| Tail], [HP | TP], State) :- 
+    nl,
+    print(start_transform),
+    nl,
     det_position_est(pos(T, R, C), C1, State),
     HP = pos(T, R, C1),
-    transform(est, Tail, TP, State).
-
+    print(Tail),
+    nl,
+    TMP = pos(T, R, C),
+    update_value_in_list(pos(T, R, C1), TMP, State, NewState),
+    print(post_update),
+    nl,
+    print(Tail),
+    nl,
+    print(end_transform),
+    transform(est, Tail, TP, NewState).
+    
 transform(est, [], [], _) :- true.
 
 /**
@@ -496,9 +511,17 @@ move_monster_position_to_front(List, Result) :-
 
 monster_position_filter(pos(monster_position, _, _)) :- true.
 
-update_column_value(_, _, _, [], []). 
+    % Caso base: lista vuota rimane lista vuota
+update_value_in_list(_, _, [], []). 
 
-update_column_value(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldList, NewList) :- !.
 
-update_column_value(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldList, NewList) :-
-    update_column_value(T, R, NewC, Rest, UpdatedRest).
+update_value_in_list(pos(OldT, OldR, OldC), pos(OldT, OldR, OldC), OldList, NewList) :- 
+    NewList = OldList.
+
+update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [ pos(OldT, OldR, OldC) | OldTail], [ pos(NewT, NewR, NewC) | NewTail ]) :- 
+    update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail,  NewTail).
+
+update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [ pos(T, R, C) | OldTail], [ pos(T, R, C) | NewTail ]) :- 
+    R \= OldR,
+    C \= OldC,
+    update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail,  NewTail).
