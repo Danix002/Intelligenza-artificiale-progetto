@@ -151,6 +151,7 @@ applicable(est, pos(gem, R,C), [ MonsterState | GemState]) :-
     \+ member( pos(gem, R, C1) , GemState ),
     MonsterState \= pos(monster_position, R, C1),
     \+ pos(wall, R, C1),
+    transform(sud, State, Result, State).
     \+ pos(destroyable_wall, R, C1).   
 
 applicable(ovest, pos(monster_position, R,C), [ _ | GemState]) :-
@@ -203,10 +204,7 @@ profondity_search(pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|S
 
 
 
-
 /**
-
-
 findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
     applicable(Az, pos(T, R, C)),
     findall_applicable_action(Tail, Result, [pos(T, R, C) | L1pos] , Az).
@@ -220,7 +218,33 @@ findall_applicable_action([pos(T, R, C)| Tail], Result, L1pos, Az):-
     \+ applicable(Az, pos(T, R, C)),
     findall_applicable_action(Tail, Result, L1pos, Az).
 **/
-initTransform(Az, State, Result) :- transform(Az, State, Result, State).
+initTransform(nord, [pos(T, R, C)| Tail], Result) :-     
+    findall(pos(gem, RG, CG), (member(pos(gem, RG, CG), Tail), RG < R), Lpos),
+    subtract(Tail, Lpos, NewTail),
+    append(Lpos, [pos(T, R, C)], L1pos),
+    append(L1pos, NewTail, State).
+    transform(nord, State, Result, State).
+
+initTransform(sud, [pos(T, R, C)| Tail], Result) :- 
+    findall(pos(gem, RG, CG), (member(pos(gem, RG, CG), Tail), RG > R), Lpos),
+    subtract(Tail, Lpos, NewTail),
+    append(Lpos, [pos(T, R, C)], L1pos),
+    append(L1pos, NewTail, State).
+    transform(sud, State, Result, State).
+
+initTransform(ovest, [pos(T, R, C)| Tail], Result) :- 
+    findall(pos(gem, RG, CG), (member(pos(gem, RG, CG), Tail), CG < C), Lpos),
+    subtract(Tail, Lpos, NewTail),
+    append(Lpos, [pos(T, R, C)], L1pos),
+    append(L1pos, NewTail, State).
+    transform(ovest, State, Result, State).
+
+initTransform(est, [pos(T, R, C)| Tail], Result) :- 
+    findall(pos(gem, RG, CG), (member(pos(gem, RG, CG), Tail), CG > C), Lpos),
+    subtract(Tail, Lpos, NewTail),
+    append(Lpos, [pos(T, R, C)], L1pos),
+    append(L1pos, NewTail, State).
+    transform(est, State, Result, State).
 
 transform(nord, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_nord(pos(T, R, C), R1, State),
