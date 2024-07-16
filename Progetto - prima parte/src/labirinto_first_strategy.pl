@@ -317,7 +317,8 @@ initTransform(est, [pos(monster_position, R, C)| Tail], Result) :-
 transform(nord, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_nord(pos(T, R, C), R1, State),
     HP = pos(T, R1, C),
-    update_value_in_list(HP, pos(T, R, C), [pos(T, R, C)| Tail], NewState),
+    TMP = pos(T, R, C),
+    update_value_in_list(HP, TMP, State, NewState),
     transform(nord, Tail, TP, NewState).
 
 transform(nord, [], [], _) :- true.
@@ -325,7 +326,15 @@ transform(nord, [], [], _) :- true.
 transform(sud, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_sud(pos(T, R, C), R1, State),
     HP = pos(T, R1, C),
-    update_value_in_list(HP, pos(T, R, C), [pos(T, R, C)| Tail], NewState),
+    TMP = pos(T, R, C),
+    print(before_update),
+    nl,
+    print(Tail),
+    update_value_in_list(HP, TMP, State, NewState),
+    print(post_update),
+    nl,
+    print(Tail),
+
     transform(sud, Tail, TP, NewState).
 
 transform(sud, [], [], _):- true.
@@ -333,7 +342,14 @@ transform(sud, [], [], _):- true.
 transform(ovest, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_ovest(pos(T, R, C), C1, State),
     HP = pos(T, R, C1),
-    update_value_in_list(HP, pos(T, R, C), [pos(T, R, C)| Tail], NewState),
+    TMP = pos(T, R, C),
+    print(Tail),
+    nl,
+    update_value_in_list(HP, TMP, State, NewState),
+    print(post_update),
+    nl,
+    print(Tail),
+    nl,
     transform(ovest, Tail, TP, NewState).
 
 transform(ovest, [], [], _) :- true.
@@ -515,13 +531,15 @@ monster_position_filter(pos(monster_position, _, _)) :- true.
 update_value_in_list(_, _, [], []). 
 
 
-update_value_in_list(pos(OldT, OldR, OldC), pos(OldT, OldR, OldC), OldList, NewList) :- 
-    NewList = OldList.
+% Caso base: lista vuota.
+update_value_in_list(_, _, [], []).
 
-update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [ pos(OldT, OldR, OldC) | OldTail], [ pos(NewT, NewR, NewC) | NewTail ]) :- 
-    update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail,  NewTail).
+% Caso quando l'elemento da sostituire viene trovato.
+update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [pos(OldT, OldR, OldC) | OldTail], [pos(NewT, NewR, NewC) | NewTail]) :-
+    update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail, NewTail).
 
-update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [ pos(T, R, C) | OldTail], [ pos(T, R, C) | NewTail ]) :- 
-    R \= OldR,
-    C \= OldC,
-    update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail,  NewTail).
+% Caso quando l'elemento corrente non è quello da sostituire.
+update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [pos(T, R, C) | OldTail], [pos(T, R, C) | NewTail]) :-
+    (T \= OldT; R \= OldR; C \= OldC),
+    update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail, NewTail).
+
