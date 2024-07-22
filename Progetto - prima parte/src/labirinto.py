@@ -1,15 +1,48 @@
 import tkinter as tk
-import janus_swi as j
+from PIL import Image, ImageTk
+from pyswip import Prolog
 
-# Inizializza la sessione di Janus
-j.consult("labirinto_first_strategy.pl")
+# Inizializza la sessione di Prolog
+prolog = Prolog()
+prolog.consult("src/labirinto_first_strategy.pl")
 
 w = "wall"
 h = "hammer"
-dw = "destriyable-wall"
+dw = "destroyable-wall"
 g = "gem"
 p = "portal"
 mp = "monster-position"
+an = "arrow-nord"
+asud = "arrow-sud"
+ae = "arrow-est"
+aw = "arrow-ovest"
+
+# Posizione iniziale del mostro
+posizione_mostro = [6, 7]
+
+# Configurazione della finestra tkinter
+root = tk.Tk()
+root.title("Labirinto")
+
+# Funzione per caricare immagini
+def carica_immagine(file):
+    img = Image.open(file)
+    img = img.resize((79, 79), Image.ADAPTIVE)  # Ridimensiona a 79x79 per adattarsi meglio a 80x80 pixel
+    return ImageTk.PhotoImage(img)
+
+immagini = {
+    w: carica_immagine("src/wall.png"),
+    h: carica_immagine("src/hammer.jpg"),
+    dw: carica_immagine("src/destroyable-wall.png"),
+    g: carica_immagine("src/gem.png"),
+    p: carica_immagine("src/portal.png"),
+    mp: carica_immagine("src/monster-position.jpg"),
+    an: carica_immagine("src/freccia_nord.jpg"),
+    asud: carica_immagine("src/freccia_sud.jpg"),
+    ae: carica_immagine("src/freccia_est.jpg"),
+    aw: carica_immagine("src/freccia_ovest.jpg"),
+    " ": carica_immagine("src/empty_r.jpg")  
+}
 
 # Configurazione del labirinto
 labirinto = [
@@ -23,72 +56,121 @@ labirinto = [
     [w, g, " ", " ", w, w, " ", " "]
 ]
 
+canvas_items = []
+
 # Funzione per disegnare il labirinto
 def disegna_labirinto(canvas, labirinto):
+    canvas_items.clear()
     for riga in range(len(labirinto)):
+        canvas_items_row = []
         for colonna in range(len(labirinto[riga])):
-            x0 = colonna * 40
-            y0 = riga * 40
-            x1 = x0 + 40
-            y1 = y0 + 40
+            x0 = colonna * 80
+            y0 = riga * 80
+            if labirinto[riga][colonna] != mp:
+                item = canvas.create_image(x0, y0, anchor=tk.NW, image=immagini[" "])
+            item = canvas.create_image(x0, y0, anchor=tk.NW, image=immagini[labirinto[riga][colonna]])
+            canvas_items_row.append(item)
+        canvas_items.append(canvas_items_row)
 
-            if labirinto[riga][colonna] == w:
-                canvas.create_rectangle(x0, y0, x1, y1, fill="black")
+def get_first_solution(prolog, query):
+    first_result = []
+    # Esegui la query
+    result_generator = prolog.query(query)
+    # Estrai solo il primo risultato
+    first_result = next(result_generator, None)
+    return first_result
 
-            if labirinto[riga][colonna] == dw:
-                canvas.create_rectangle(x0, y0, x1, y1, fill="grey")
+# Funzione per aggiornare il labirinto con la direzione del movimento
+def aggiorna_labirinto(labirinto, direction, final_visited, Gem_Stat):
+    global posizione_mostro
+    x, y = posizione_mostro[0], posizione_mostro[1]
+    print(final_visited)
 
-            if labirinto[riga][colonna] == g:
-                canvas.create_rectangle(x0, y0, x1, y1, fill="purple") 
+    def muovi_mostro_e_gemme(i):
+        if i >= len(final_visited):
+            button.config(state=tk.NORMAL)  
+            return
+        
+        dir = direction[i-1]
+        from_visited_x, from_visited_y = generate_cordinate_from_pos(final_visited[i-1])
+        to_visited_x, to_visited_y = generate_cordinate_from_pos(final_visited[i])
+        
+        # Ottieni le coordinate delle celle da visitare
+        x1, y1 = from_visited_x, from_visited_y
+        x2, y2 = to_visited_x, to_visited_y
+        
+        # Definisci i movimenti per ciascuna direzione
+        if dir == 'nord':
+            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
             
-            if labirinto[riga][colonna] == h:
-                canvas.create_rectangle(x0, y0, x1, y1, fill="green") 
-
-            if labirinto[riga][colonna] == p:
-                canvas.create_rectangle(x0, y0, x1, y1, fill="yellow") 
+        elif dir == 'sud':
+            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
+        elif dir == 'ovest':
+            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
+        elif dir == 'est':
+            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
+        
+        last_GemStates = Gem_Stat[i-1]
+        
+        for gem in last_GemStates:
+            x, y = generate_cordinate_from_pos(gem)
+            canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+        
+        new_GemStates = Gem_Stat[i]
+        for gem in new_GemStates:
+            x, y = generate_cordinate_from_pos(gem)
+            canvas.itemconfig(canvas_items[x][y], image=immagini[g])
             
-            if labirinto[riga][colonna] == mp:
-                canvas.create_rectangle(x0, y0, x1, y1, fill="red") 
+            
+        
+        
+        root.after(1500, muovi_mostro_e_gemme, i+1)
+        
+        # Aggiorna la posizione del mostro
+        posizione_mostro[0], posizione_mostro[1] = x2, y2
+    
+    muovi_mostro_e_gemme(1)
+    
 
-            if labirinto[riga][colonna] == " ":
-                canvas.create_rectangle(x0, y0, x1, y1, fill="white")
 
-# Funzione per aggiornare il labirinto con la soluzione trovata
-def aggiorna_labirinto(labirinto, soluzione):
-    for state in soluzione:
-        pos = state[0]
-        x, y = pos[0], pos[1]
-        labirinto[y-1][x-1] = "O"
-
+def generate_cordinate_from_pos(position):
+    # form the string 'pos(monster_position, x, y) in position extract the cordinate
+    x = position.split(',')[1]
+    y = position.split(',')[2][:-1]
+    return int(x), int(y)
+    
 # Funzione per risolvere il labirinto con Prolog
 def risolvi_labirinto():
-    result = j.query('ricerca(Cammino)')
-    print(result.state)
-    """    
-    if result:
-        cammino = result.state
-        aggiorna_labirinto(labirinto, cammino)
-        canvas.delete("all")
-        disegna_labirinto(canvas, labirinto)
-        print("Soluzione trovata:", cammino)
+    #button cant't clicked
+    button.config(state=tk.DISABLED)
+    
+    disegna_labirinto(canvas, labirinto)
+    first_result = get_first_solution(prolog, "ricerca(Cammino, GemStates, FinalVisited)")
+    
+    if first_result:
+        aggiorna_labirinto(labirinto, first_result['Cammino'], first_result['FinalVisited'][::-1], first_result['GemStates'])
+        print("Soluzione trovata:", first_result['Cammino'])
     else:
         print("Nessuna soluzione trovata")
-    """
+        #button can be clicked
+        button.config(state=tk.NORMAL)
+        
 
-# Configurazione della finestra tkinter
-root = tk.Tk()
-root.title("Labirinto")
-canvas = tk.Canvas(root, width=320, height=320)
+
+# Configurazione del canvas
+canvas = tk.Canvas(root, width=640, height=640)  # Dimensione del canvas aumentata
 canvas.pack()
 
 # Disegna il labirinto
 disegna_labirinto(canvas, labirinto)
 
-# Bottone per risolvere il labirinto
+
 button = tk.Button(root, text="Risolvi Labirinto", command=risolvi_labirinto)
 button.pack()
 
 # Avvia la finestra
 root.mainloop()
-
-

@@ -83,6 +83,8 @@ azione(ovest).
 
 has_hammer(0).
 
+
+
 % TODO DESTRUTTIBLE WALL
 applicable(nord, pos(monster_position, R, C), [_ | GemState]) :-
     R > 0,
@@ -91,13 +93,13 @@ applicable(nord, pos(monster_position, R, C), [_ | GemState]) :-
     \+ pos(wall, R1, C),
     \+ pos(destroyable_wall, R1, C).
     
-applicable(nord, pos(monster_position, R, C), [_ | GemState]) :-
+applicable(nord, pos(monster_position, R, C), [MonsterState | GemState]) :-
     R > 0,
     R1 is R - 1,
     member(pos(gem, R1, C) , GemState),
     \+ pos(wall, R1, C),
     \+ pos(destroyable_wall, R1, C),
-    applicable(nord, pos(gem, R1, C), [_ | GemState]).
+    applicable(nord, pos(gem, R1, C), [MonsterState | GemState]).
 
 /**
 applicable(nord, pos(monster_position, R,C), [MonsterState | GemState]) :-
@@ -116,6 +118,7 @@ applicable(nord, pos(gem, R, C), [MonsterState | GemState]) :-
     \+ pos(wall, R1, C),
     \+ pos(destroyable_wall, R1, C).
 
+
 applicable(nord, pos(gem, R, C), [MonsterState | GemState]) :-
     R > 0,
     R1 is R-1,
@@ -125,46 +128,6 @@ applicable(nord, pos(gem, R, C), [MonsterState | GemState]) :-
     \+ pos(destroyable_wall, R1, C),
     applicable(nord, pos(gem, R1, C), [MonsterState | GemState]).
 
-applicable(sud, pos(monster_position, R, C), [_ | GemState]) :-
-    R < 7,
-    R1 is R + 1,
-    \+ member(pos(gem, R1, C) , GemState),
-    \+ pos(wall, R1, C),
-    \+ pos(destroyable_wall, R1, C).
- 
-applicable(sud, pos(monster_position, R, C), [MonsterState | GemState]) :-
-    R < 7,
-    R1 is R + 1,
-    member(pos(gem, R1, C) , GemState),
-    \+ pos(wall, R1, C),
-    \+ pos(destroyable_wall, R1, C),
-    applicable(sud, pos(gem, R1, C), [MonsterState | GemState]).
-
-/**
-applicable(sud, pos(monster_position, R,C), [ MonsterState | GemState]) :-
-    R < 7,
-    R1 is R + 1,
-    pos(destroyable_wall, R1, C),
-    has_hammer(N),
-    N > 0.
-**/
-
-applicable(sud, pos(gem, R, C), [MonsterState | GemState]) :-
-    R < 7,
-    R1 is R + 1,
-    \+ member( pos(gem, R1, C) , GemState ),
-    MonsterState \= pos(monster_position, R1, C),
-    \+ pos(wall, R1, C),
-    \+ pos(destroyable_wall, R1, C).
-
-applicable(sud, pos(gem, R, C), [MonsterState | GemState]) :-
-    R < 7,
-    R1 is R + 1,
-    member( pos(gem, R1, C) , GemState ),
-    MonsterState \= pos(monster_position, R1, C),
-    \+ pos(wall, R1, C),
-    \+ pos(destroyable_wall, R1, C),
-    applicable(sud, pos(gem, R1, C), [MonsterState | GemState]).
 
 applicable(est, pos(monster_position, R, C), [_ | GemState]) :-
     C < 7,
@@ -190,6 +153,7 @@ applicable(est, pos(monster_position, R,C), [ MonsterState | GemState]) :-
     N > 0.
 **/
 
+
 applicable(est, pos(gem, R, C), [MonsterState | GemState]) :-
     C < 7,
     C1 is C + 1,
@@ -206,6 +170,48 @@ applicable(est, pos(gem, R, C), [MonsterState | GemState]) :-
     \+ pos(wall, R, C1),
     \+ pos(destroyable_wall, R, C1),
     applicable(est, pos(gem, R, C1), [MonsterState | GemState]).
+
+/**
+applicable(sud, pos(monster_position, R,C), [ MonsterState | GemState]) :-
+    R < 7,
+    R1 is R + 1,
+    pos(destroyable_wall, R1, C),
+    has_hammer(N),
+    N > 0.
+**/
+
+applicable(sud, pos(monster_position, R, C), [_ | GemState]) :-
+    R < 7,
+    R1 is R + 1,
+    \+ member(pos(gem, R1, C) , GemState),
+    \+ pos(wall, R1, C),
+    \+ pos(destroyable_wall, R1, C).
+ 
+applicable(sud, pos(monster_position, R, C), [MonsterState | GemState]) :-
+    R < 7,
+    R1 is R + 1,
+    member(pos(gem, R1, C) , GemState),
+    \+ pos(wall, R1, C),
+    \+ pos(destroyable_wall, R1, C),
+    applicable(sud, pos(gem, R1, C), [MonsterState | GemState]).
+
+applicable(sud, pos(gem, R, C), [MonsterState | GemState]) :-
+    R < 7,
+    R1 is R + 1,
+    \+ member( pos(gem, R1, C) , GemState ),
+    MonsterState \= pos(monster_position, R1, C),
+    \+ pos(wall, R1, C),
+    \+ pos(destroyable_wall, R1, C).
+
+applicable(sud, pos(gem, R, C), [MonsterState | GemState]) :-
+    R < 7,
+    R1 is R + 1,
+    member( pos(gem, R1, C) , GemState ),
+    MonsterState \= pos(monster_position, R1, C),
+    \+ pos(wall, R1, C),
+    \+ pos(destroyable_wall, R1, C),
+    applicable(sud, pos(gem, R1, C), [MonsterState | GemState]).
+
 
 applicable(ovest, pos(monster_position, R,C), [_ | GemState]) :-
     C > 0,
@@ -255,52 +261,62 @@ applicable(pickup, pos(_, R,C)) :-
     N is N + 1.
 */
 
-ricerca(Cammino):-
+ricerca(Cammino, GemStates, FinalVisited):-
     pos(monster_position, R, C),
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
-    profondity_search(pos(monster_position, R, C), Lpos, Cammino, [pos(monster_position, R, C)]).
-    %print(Cammino).
+    profondity_search(pos(monster_position, R, C), Lpos, Cammino, [pos(monster_position, R, C)],  GemStates, FinalVisited),
+    write('gemstates: '), print(GemStates), nl,
+    print(FinalVisited), nl,
+    print(Cammino).
 
-profondity_search(pos(monster_position, MonsterRow, MonsterCol), _, [], _) :- pos(portal, MonsterRow, MonsterCol), !.
+profondity_search(pos(monster_position, MonsterRow, MonsterCol), GemState, [], Visited, [GemState|[]], FinalVisited) :- pos(portal, MonsterRow, MonsterCol), FinalVisited = Visited, !.
 
-profondity_search(pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|SeqAzioni], Visited) :-
-    nl,
-    print(Visited),
-    nl,
+profondity_search(pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|SeqAzioni], Visited, [GemState| Tail], FinalVisited) :-
     applicable(
         Az, 
         pos(monster_position, MonsterRow, MonsterCol),
-        [pos(monster_position, MonsterRow, MonsterCol) | GemState]%,
-        % Visited : la applicable deve controllare i visited
+        [pos(monster_position, MonsterRow, MonsterCol) | GemState]
     ),
-    print(Az),
-    nl,
-    init_transform(Az, [pos(monster_position, MonsterRow, MonsterCol) | GemState], [TransformedPositionMonster | TransformedPositionGem]),  
-    profondity_search(TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [ TransformedPositionMonster | Visited]).
+    write(Az),
+    init_transform(Az, [pos(monster_position, MonsterRow, MonsterCol) | GemState], Visited, [TransformedPositionMonster | TransformedPositionGem]),
+    profondity_search(TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [TransformedPositionMonster | Visited], Tail, FinalVisited).
 
-init_transform(nord, [pos(monster_position, R, C)| Tail], Result) :-     
+
+init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result) :-     
     sort_by_row([pos(monster_position, R, C)| Tail], State),
     transform(nord, State, ResultTMP, [pos(monster_position, R, C)| Tail]),
-    move_monster_position_to_front(ResultTMP, Result).
+    move_monster_position_to_front(ResultTMP, Result),
+    check_visited(nord, Result, Visited), !.
 
-init_transform(sud, [pos(monster_position, R, C)| Tail], Result) :- 
+init_transform(sud, [pos(monster_position, R, C)| Tail], Visited, Result) :- 
     sort_by_row([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),
     transform(sud, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail]),
-    move_monster_position_to_front(ResultTMP, Result).
+    move_monster_position_to_front(ResultTMP, Result),
+    check_visited(sud, Result, Visited), !.
 
-init_transform(ovest, [pos(monster_position, R, C)| Tail], Result) :- 
+init_transform(ovest, [pos(monster_position, R, C)| Tail], Visited, Result) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
     transform(ovest, State, ResultTMP, [pos(monster_position, R, C)| Tail]),
-    move_monster_position_to_front(ResultTMP, Result).
+    move_monster_position_to_front(ResultTMP, Result),
+    check_visited(ovest, Result, Visited), !.
 
-init_transform(est, [pos(monster_position, R, C)| Tail], Result) :- 
+init_transform(est, [pos(monster_position, R, C)| Tail], Visited, Result) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),   
     transform(est, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail]),
-    move_monster_position_to_front(ResultTMP, Result).
+    move_monster_position_to_front(ResultTMP, Result),
+    check_visited(est, Result, Visited), !.
 
-
+%Az e Gemstates
+check_visited(_, [pos(monster_position, R, C) | _], Visited) :- 
+    %write('Checking '), write(Az), nl,
+    %write('visited: '), write(Visited), nl,
+    %print([pos(monster_position, R, C) | GemState]), nl,
+    %write('New position: '), write(pos(monster_position, R, C)), write('__'),
+    \+member(pos(monster_position, R, C), Visited).
+    %write(Az), write(' is valid'), nl.
+    
 %TRANSFORM
 transform(nord, [pos(T, R, C)| Tail], [ HP | TP], State) :- 
     det_position_nord(pos(T, R, C), R1, State),
@@ -348,6 +364,10 @@ det_position_nord(pos(monster_position, R, C), R1) :-
     det_position_nord(pos(monster_position, RTMP, C), R1).
 */
 
+det_position_nord(pos(monster_position, R, C), R1, _) :- 
+    pos(portal, R, C),
+    R1 is R.
+
 det_position_nord(pos(T, R, C), R1, State) :- 
     \+ applicable(nord, pos(T, R,C), State),
     R1 is R.
@@ -383,6 +403,12 @@ det_position_sud(pos(T, R, C), R1, State) :-
     \+ applicable(sud, pos(T, R,C), State),
     R1 is R.
 
+%cell is the goal pos(portal, R, C)
+det_position_sud(pos(_, R, C), R1, _) :-
+    pos(portal, R, C),
+    R1 is R.
+
+
 /**
 det_position_sud(pos(gem, R, C), R1) :-
     R < 7,
@@ -416,6 +442,10 @@ det_position_ovest(pos(T, R, C), C1, State) :-
     \+ applicable(ovest, pos(T, R,C), State),
     C1 is C.
 
+
+det_position_ovest(pos(monster_position, R, C), C1, _) :-
+    pos(portal, R, C),
+    C1 is C.
 
 /**
 det_position_ovest(pos(gem, R, C), C1) :-
@@ -463,6 +493,12 @@ det_position_est(pos(monster_position, R, C), C1) :-
     pos(hammer, R, CTMP),
     det_position_est(pos(_, R, CTMP), C1).
 */
+
+
+det_position_est(pos(monster_position, R, C), C1, _) :-
+    pos(portal, R, C),
+    C1 is C.
+
 
 det_position_est(pos(T, R, C), C1, State) :-
     applicable(est, pos(T, R,C), State),
