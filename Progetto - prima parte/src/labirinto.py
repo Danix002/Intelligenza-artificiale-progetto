@@ -41,12 +41,12 @@ immagini = {
 labirinto = [
     [w, h, h, " ", " ", " ", " ", g],
     [" ", h, " ", " ", w, " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", p, " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", w, g, " ", " ", " "],
     [" ", " ", " ", " ", w, w, " ", w],
     [" ", dw, dw, dw, w, " ", " ", mp],
-    [w, g, " ", p, w, w, " ", " "]
+    [w, g, " ", " ", w, w, " ", " "]
 ]
 
 canvas_items = []
@@ -90,21 +90,36 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
         # Ottieni le coordinate delle celle da visitare
         x1, y1 = from_visited_x, from_visited_y
         x2, y2 = to_visited_x, to_visited_y
+
+        coordinates = bresenham(x1, y1, x2, y2)
+        obstacle_positions = obstacle_detector(coordinates, targets={h, dw})
         
         # Definisci i movimenti per ciascuna direzione
         if dir == 'nord':
             canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            if(len(obstacle_positions) > 0):
+                for x, y in obstacle_positions:
+                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'sud':
             canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            if(len(obstacle_positions) > 0):
+                for x, y in obstacle_positions:
+                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'ovest':
             canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            if(len(obstacle_positions) > 0):
+                for x, y in obstacle_positions:
+                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'est':
             canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
+            if(len(obstacle_positions) > 0):
+                for x, y in obstacle_positions:
+                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
-        
+
         last_GemStates = gem_states[i-1]
         
         for gem in last_GemStates:
@@ -123,6 +138,37 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
     
     muovi_mostro_e_gemme(1)
 
+def bresenham(x1, y1, x2, y2):
+    # Lista delle coordinate intermedie
+    coordinates = []
+    # Calcolo delle differenze e dei passi
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+    sx = 1 if x1 < x2 else -1
+    sy = 1 if y1 < y2 else -1
+    err = dx - dy
+    while True:
+        # Aggiungi la coordinata corrente alla lista
+        coordinates.append((x1, y1))
+        # Se siamo arrivati al punto finale, termina il ciclo
+        if x1 == x2 and y1 == y2:
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x1 += sx
+        if e2 < dx:
+            err += dx
+            y1 += sy
+    return coordinates
+
+def obstacle_detector(coordinates, targets):
+    obstacle_positions = []
+    for x, y in coordinates:
+        if labirinto[x][y] in targets:
+            obstacle_positions.append((x, y))
+    return obstacle_positions
+
 def generate_cordinate_from_pos(position):
     # Form the string 'pos(monster_position, x, y)' in position extract the cordinate
     x = position.split(',')[1]
@@ -133,8 +179,9 @@ def generate_cordinate_from_pos(position):
 def risolvi_labirinto():
     # Button cant't clicked
     button.config(state=tk.DISABLED)
-    
+
     disegna_labirinto(canvas, labirinto)
+
     first_result = get_first_solution(prolog, "ricerca(Cammino, GemStates, FinalVisited)")
     
     if first_result:
