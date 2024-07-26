@@ -1,9 +1,3 @@
-:- discontiguous pos/3.
-:- discontiguous has_hammer/1.
-:- discontiguous initTransform/3.
-:- discontiguous transform/4.
-:- discontiguous applicable/5.
-
 % Definizione del labirinto
 pos(wall, 0, 0).
 pos(hammer, 0, 1).
@@ -84,21 +78,29 @@ azione(ovest).
 
 has_hammer(0).
 
-applicable(nord, pos(monster_position, R, C), [_ | GemState], _, FreeCells) :-
+applicable(nord, pos(monster_position, R, C), [_ | GemState], _, _) :-
     R > 0,
     R1 is R - 1,
     \+ member(pos(gem, R1, C), GemState),
     \+ pos(wall, R1, C),
     \+ pos(destroyable_wall, R1, C).
 
-applicable(nord, pos(monster_position, R, C), [_ | GemState], HammerTaked, FreeCells) :-
+applicable(nord, pos(monster_position, R, C), [_ | GemState], _, FreeCells) :-
     R > 0,
     R1 is R - 1,
     \+ member(pos(gem, R1, C), GemState),
     \+ pos(wall, R1, C),
     pos(destroyable_wall, R1, C),
     member(pos(empty, R1, C), FreeCells).
-    
+
+applicable(nord, pos(monster_position, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
+    R > 0,
+    R1 is R - 1,
+    member(pos(gem, R1, C), GemState),
+    \+ pos(wall, R1, C),
+    \+ pos(destroyable_wall, R1, C),
+    applicable(nord, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
+
 applicable(nord, pos(monster_position, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
     R > 0,
     R1 is R - 1,
@@ -108,13 +110,23 @@ applicable(nord, pos(monster_position, R, C), [MonsterState | GemState], HammerT
     member(pos(empty, R1, C), FreeCells),
     applicable(nord, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
 
-applicable(nord, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+applicable(nord, pos(gem, R, C), [MonsterState | GemState], _, _) :-
     R > 0,
     R1 is R-1,
     \+ member(pos(gem, R1, C) , GemState),
     MonsterState \= pos(monster_position, R1, C),
     \+ pos(wall, R1, C),
     \+ pos(destroyable_wall, R1, C),
+    \+ pos(portal, R1, C).
+
+applicable(nord, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+    R > 0,
+    R1 is R-1,
+    \+ member(pos(gem, R1, C) , GemState),
+    MonsterState \= pos(monster_position, R1, C),
+    \+ pos(wall, R1, C),
+    pos(destroyable_wall, R1, C),
+    member(pos(empty, R1, C), FreeCells),
     \+ pos(portal, R1, C).
 
 applicable(nord, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
@@ -127,12 +139,31 @@ applicable(nord, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCel
     \+ pos(portal, R1, C),
     applicable(nord, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
 
-applicable(est, pos(monster_position, R, C), [_ | GemState], _, FreeCells) :-
+applicable(nord, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
+    R > 0,
+    R1 is R-1,
+    member(pos(gem, R1, C) , GemState),
+    MonsterState \= pos(monster_position, R1, C),
+    \+ pos(wall, R1, C),
+    pos(destroyable_wall, R1, C),
+    member(pos(empty, R1, C), FreeCells),
+    \+ pos(portal, R1, C),
+    applicable(nord, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
+
+applicable(est, pos(monster_position, R, C), [_ | GemState], _, _) :-
     C < 7,
     C1 is C + 1,
     \+ member(pos(gem, R, C1) , GemState),
     \+ pos(wall, R, C1),
     \+ pos(destroyable_wall, R, C1).
+
+applicable(est, pos(monster_position, R, C), [_ | GemState], _, FreeCells) :-
+    C < 7,
+    C1 is C + 1,
+    \+ member(pos(gem, R, C1) , GemState),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells).
 
 applicable(est, pos(monster_position, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
     C < 7,
@@ -142,7 +173,16 @@ applicable(est, pos(monster_position, R, C), [MonsterState | GemState], HammerTa
     \+ pos(destroyable_wall, R, C1),
     applicable(est, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
 
-applicable(est, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+applicable(est, pos(monster_position, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
+    C < 7,
+    C1 is C + 1,
+    member(pos(gem, R, C1) , GemState),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells),
+    applicable(est, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
+
+applicable(est, pos(gem, R, C), [MonsterState | GemState], _, _) :-
     C < 7,
     C1 is C + 1,
     \+ member(pos(gem, R, C1) , GemState),
@@ -151,24 +191,45 @@ applicable(est, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
     \+ pos(destroyable_wall, R, C1),
     \+ pos(portal, R, C1).  
 
+applicable(est, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+    C < 7,
+    C1 is C + 1,
+    \+ member(pos(gem, R, C1) , GemState),
+    MonsterState \= pos(monster_position, R, C1),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells),
+    \+ pos(portal, R, C1). 
+
 applicable(est, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
     C < 7,
     C1 is C + 1,
-    member(pos(gem, R, C1) , GemState),
+    member(pos(gem, R, C1), GemState),
     MonsterState \= pos(monster_position, R, C1),
     \+ pos(wall, R, C1),
     \+ pos(destroyable_wall, R, C1),
     \+ pos(portal, R, C1),
     applicable(est, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
 
-applicable(sud, pos(monster_position, R, C), [_ | GemState], FreeCells) :-
+applicable(est, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
+    C < 7,
+    C1 is C + 1,
+    member(pos(gem, R, C1), GemState),
+    MonsterState \= pos(monster_position, R, C1),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells),
+    \+ pos(portal, R, C1),
+    applicable(est, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
+
+applicable(sud, pos(monster_position, R, C), [_ | GemState], _, _) :-
     R < 7,
     R1 is R + 1,
     \+ member(pos(gem, R1, C) , GemState),
     \+ pos(wall, R1, C),
     \+ pos(destroyable_wall, R1, C).
 
-applicable(sud, pos(monster_position, R, C), [_ | GemState], FreeCells) :-
+applicable(sud, pos(monster_position, R, C), [_ | GemState], _, FreeCells) :-
     R < 7,
     R1 is R + 1,
     \+ member(pos(gem, R1, C), GemState),
@@ -185,13 +246,31 @@ applicable(sud, pos(monster_position, R, C), [MonsterState | GemState], HammerTa
     member(pos(empty, R1, C), FreeCells),
     applicable(sud, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
 
-applicable(sud, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+applicable(sud, pos(monster_position, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
     R < 7,
     R1 is R + 1,
-    \+ member( pos(gem, R1, C) , GemState ),
+    member(pos(gem, R1, C) , GemState),
+    \+ pos(wall, R1, C),
+    \+ pos(destroyable_wall, R1, C),
+    applicable(sud, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
+
+applicable(sud, pos(gem, R, C), [MonsterState | GemState], _, _) :-
+    R < 7,
+    R1 is R + 1,
+    \+ member(pos(gem, R1, C), GemState),
     MonsterState \= pos(monster_position, R1, C),
     \+ pos(wall, R1, C),
     \+ pos(destroyable_wall, R1, C),
+    \+ pos(portal, R1, C).
+
+applicable(sud, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+    R < 7,
+    R1 is R + 1,
+    \+ member(pos(gem, R1, C), GemState),
+    MonsterState \= pos(monster_position, R1, C),
+    \+ pos(wall, R1, C),
+    pos(destroyable_wall, R1, C),
+    member(pos(empty, R1, C), FreeCells),
     \+ pos(portal, R1, C).
 
 applicable(sud, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
@@ -204,12 +283,31 @@ applicable(sud, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCell
     \+ pos(portal, R1, C),
     applicable(sud, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
 
-applicable(ovest, pos(monster_position, R,C), [_ | GemState], _, FreeCells) :-
+applicable(sud, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
+    R < 7,
+    R1 is R + 1,
+    member(pos(gem, R1, C), GemState),
+    MonsterState \= pos(monster_position, R1, C),
+    \+ pos(wall, R1, C),
+    pos(destroyable_wall, R1, C),
+    member(pos(empty, R1, C), FreeCells),
+    \+ pos(portal, R1, C),
+    applicable(sud, pos(gem, R1, C), [MonsterState | GemState], HammerTaked, FreeCells).
+
+applicable(ovest, pos(monster_position, R,C), [_ | GemState], _, _) :-
     C > 0,
     C1 is C - 1,
     \+ member(pos(gem, R, C1) , GemState),
     \+ pos(wall, R, C1),
     \+ pos(destroyable_wall, R, C1).
+
+applicable(ovest, pos(monster_position, R,C), [_ | GemState], _, FreeCells) :-
+    C > 0,
+    C1 is C - 1,
+    \+ member(pos(gem, R, C1) , GemState),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells).
 
 applicable(ovest, pos(monster_position, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
     C > 0,
@@ -219,7 +317,16 @@ applicable(ovest, pos(monster_position, R, C), [MonsterState | GemState], Hammer
     \+ pos(destroyable_wall, R, C1),
     applicable(ovest, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
 
-applicable(ovest, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+applicable(ovest, pos(monster_position, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
+    C > 0,
+    C1 is C - 1,
+    member(pos(gem, R, C1) , GemState),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells),
+    applicable(ovest, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
+
+applicable(ovest, pos(gem, R, C), [MonsterState | GemState], _, _) :-
     C > 0,
     C1 is C - 1,
     \+ member(pos(gem, R, C1) , GemState),
@@ -227,6 +334,27 @@ applicable(ovest, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
     \+ pos(wall, R, C1),
     \+ pos(destroyable_wall, R, C1),
     \+ pos(portal, R, C1).
+
+applicable(ovest, pos(gem, R, C), [MonsterState | GemState], _, FreeCells) :-
+    C > 0,
+    C1 is C - 1,
+    \+ member(pos(gem, R, C1) , GemState),
+    MonsterState \= pos(monster_position, R, C1),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells),
+    \+ pos(portal, R, C1).
+
+applicable(ovest, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
+    C > 0,
+    C1 is C - 1,
+    member(pos(gem, R, C1) , GemState),
+    MonsterState \= pos(monster_position, R, C1),
+    \+ pos(wall, R, C1),
+    pos(destroyable_wall, R, C1),
+    member(pos(empty, R, C1), FreeCells),
+    \+ pos(portal, R, C1),
+    applicable(ovest, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
 
 applicable(ovest, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCells) :-
     C > 0,
@@ -256,7 +384,8 @@ profondity_search(pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|S
         Az, 
         pos(monster_position, MonsterRow, MonsterCol),
         [pos(monster_position, MonsterRow, MonsterCol) | GemState],
-        HammerTaked
+        HammerTaked,
+        FreeCells
     ),
     init_transform(Az, [pos(monster_position, MonsterRow, MonsterCol) | GemState], Visited, [TransformedPositionMonster | TransformedPositionGem], HammerTaked, NewHammerTaked1, FreeCells, NewFreeCells),
     profondity_search(TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [TransformedPositionMonster | Visited], Tail, FinalVisited, NewHammerTaked1, HammerTaked1, NewFreeCells, FreeCellsFinal).
@@ -308,7 +437,7 @@ transform(nord, [pos(T, R, C)| Tail], [ HP | TP], State, HammerTaked, HammerTake
     HP = pos(T, R1, C),
     TMP = pos(T, R, C),
     update_value_in_list(HP, TMP, State, NewState),
-    transform(nord, Tail, TP, NewState, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP ).
+    transform(nord, Tail, TP, NewState, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP).
 
 transform(nord, [], [], _, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :- HammerTaked1 is HammerTaked, FreeCellsTMP = FreeCells, true.
 
@@ -351,6 +480,16 @@ det_position_nord(pos(monster_position, R, C), R1, State, HammerTaked, HammerTak
     pos(hammer, RTMP, C),
     \+ member(pos(empty, RTMP, C), FreeCells),
     NewHammerTaked is HammerTaked + 1,
+    append(FreeCells, [pos(empty, RTMP, C)], NewFreeCells),
+    det_position_nord(pos(monster_position, RTMP, C), R1, State, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP).
+
+det_position_nord(pos(monster_position, R, C), R1, State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :-
+    \+ applicable(nord, pos(monster_position, R,C), State, HammerTaked, FreeCells),
+    RTMP is R - 1,
+    pos(destroyable_wall, RTMP, C),
+    \+ member(pos(empty, RTMP, C), FreeCells),
+    HammerTaked > 0,
+    NewHammerTaked is HammerTaked - 1,
     append(FreeCells, [pos(empty, RTMP, C)], NewFreeCells),
     det_position_nord(pos(monster_position, RTMP, C), R1, State, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP).
 
@@ -416,6 +555,16 @@ det_position_ovest(pos(monster_position, R, C), C1, State, HammerTaked, HammerTa
     append(FreeCells, [pos(empty, R, CTMP)], NewFreeCells),
     det_position_ovest(pos(monster_position, R, CTMP), C1, State, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP).
 
+det_position_ovest(pos(monster_position, R, C), R1, State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :-
+    \+ applicable(ovest, pos(monster_position, R,C), State, HammerTaked, FreeCells),
+    CTMP is C - 1,
+    pos(destroyable_wall, R, CTMP),
+    \+ member(pos(empty, R, CTMP), FreeCells),
+    HammerTaked > 0,
+    NewHammerTaked is HammerTaked - 1,
+    append(FreeCells, [pos(empty, R, CTMP)], NewFreeCells),
+    det_position_ovest(pos(monster_position, R, CTMP), R1, State, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP).
+
 det_position_ovest(pos(monster_position, R, C), C1, _, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :-
     pos(portal, R, C),
     HammerTaked1 is HammerTaked,
@@ -426,7 +575,6 @@ det_position_ovest(pos(T, R, C), C1, State, HammerTaked, HammerTaked1, FreeCells
     applicable(ovest, pos(T, R, C), State, HammerTaked, FreeCells),
     CTMP is C - 1,
     det_position_ovest(pos(T, R, CTMP), C1, State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP).
-
 
 det_position_est(pos(T, R, C), C1, State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :-
     \+ applicable(est, pos(T, R, C), State, HammerTaked, FreeCells),
@@ -442,6 +590,16 @@ det_position_est(pos(monster_position, R, C), C1, State, HammerTaked, HammerTake
     NewHammerTaked is HammerTaked + 1,
     append(FreeCells, [pos(empty, R, CTMP)], NewFreeCells),
     det_position_est(pos(monster_position, R, CTMP), C1, State, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP).
+
+det_position_est(pos(monster_position, R, C), R1, State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :-
+    \+ applicable(est, pos(monster_position, R,C), State, HammerTaked, FreeCells),
+    CTMP is C + 1,
+    pos(destroyable_wall, R, CTMP),
+    \+ member(pos(empty, R, CTMP), FreeCells),
+    HammerTaked > 0,
+    NewHammerTaked is HammerTaked - 1,
+    append(FreeCells, [pos(empty, R, CTMP)], NewFreeCells),
+    det_position_est(pos(monster_position, R, CTMP), R1, State, NewHammerTaked, HammerTaked1, NewFreeCells, FreeCellsTMP).
 
 det_position_est(pos(monster_position, R, C), C1, _, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :-
     pos(portal, R, C),
