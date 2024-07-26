@@ -13,10 +13,6 @@ dw = "destroyable-wall"
 g = "gem"
 p = "portal"
 mp = "monster-position"
-an = "arrow-nord"
-asud = "arrow-sud"
-ae = "arrow-est"
-aw = "arrow-ovest"
 
 # Posizione iniziale del mostro
 posizione_mostro = [6, 7]
@@ -38,19 +34,19 @@ immagini = {
     g: carica_immagine("src/img/gem.png"),
     p: carica_immagine("src/img/portal.png"),
     mp: carica_immagine("src/img/monster-position.png"),
-    " ": carica_immagine("src/img/empty.jpg")  
+    " ": carica_immagine("src/img/empty-alternative.jpg")  
 }
 
 # Configurazione del labirinto
 labirinto = [
     [w, h, h, " ", " ", " ", " ", g],
     [" ", h, " ", " ", w, " ", " ", " "],
-    [" ", p, " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", w, g, " ", " ", " "],
     [" ", " ", " ", " ", w, w, " ", w],
     [" ", dw, dw, dw, w, " ", " ", mp],
-    [w, g, " ", " ", w, w, " ", " "]
+    [w, g, " ", p, w, w, " ", " "]
 ]
 
 canvas_items = []
@@ -99,7 +95,6 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
         if dir == 'nord':
             canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
-            
         elif dir == 'sud':
             canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
