@@ -1,7 +1,7 @@
 % Definizione del labirinto
 pos(wall, 0, 0).
 pos(hammer, 0, 1).
-pos(hammer, 0, 2).
+pos(empty, 0, 2).
 pos(empty, 0, 3).
 pos(empty, 0, 4).
 pos(empty, 0, 5).
@@ -9,7 +9,7 @@ pos(empty, 0, 6).
 pos(gem, 0, 7).
 
 pos(empty, 1, 0).
-pos(hammer, 1, 1).
+pos(empty, 1, 1).
 pos(empty, 1, 2).
 pos(empty, 1, 3).
 pos(wall, 1, 4).
@@ -411,7 +411,7 @@ ricerca(Cammino, GemStates, FinalVisited):-
     pos(monster_position, R, C),
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
     has_hammer(HammerTaked),
-    profondity_search(pos(monster_position, R, C), Lpos, Cammino, [pos(monster_position, R, C)],  GemStates, FinalVisited, HammerTaked, HammerTaked1, [], FreeCellsFinal),
+    profondity_search(pos(monster_position, R, C), Lpos, Cammino, [[pos(monster_position, R, C) | Lpos]],  GemStates, FinalVisited, HammerTaked, HammerTaked1, [], FreeCellsFinal),
     write('gem states: '), print(GemStates), nl,
     write('position visited by monster: '), print(FinalVisited), nl,
     write('hammer taked: '), print(HammerTaked1), nl,
@@ -429,7 +429,11 @@ profondity_search(pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|S
         FreeCells
     ),
     init_transform(Az, [pos(monster_position, MonsterRow, MonsterCol) | GemState], Visited, [TransformedPositionMonster | TransformedPositionGem], HammerTaked, NewHammerTaked1, FreeCells, NewFreeCells),
-    profondity_search(TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [TransformedPositionMonster | Visited], Tail, FinalVisited, NewHammerTaked1, HammerTaked1, NewFreeCells, FreeCellsFinal).
+    
+    sort_by_column(TransformedPositionGem, SortTransformedPositionGemColumn ),
+    sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem ),
+
+    profondity_search(TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [[TransformedPositionMonster | SortTransformedPositionGem] | Visited], Tail, FinalVisited, NewHammerTaked1, HammerTaked1, NewFreeCells, FreeCellsFinal).
 
 init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1, FreeCells, NewFreeCells) :-     
     sort_by_row([pos(monster_position, R, C)| Tail], State),
@@ -465,12 +469,14 @@ init_transform(est, [pos(monster_position, R, C)| Tail], Visited, Result, Hammer
     move_monster_position_to_front(ResultTMP, Result),
     check_visited(est, Result, Visited), !.
 
-check_visited(_, [pos(monster_position, R, C) | _], Visited) :- 
+check_visited(_, [pos(monster_position, R, C) | GenState], Visited) :- 
     %write('Checking '), write(Az), nl,
     %write('visited: '), write(Visited), nl,
     %print([pos(monster_position, R, C) | GemState]), nl,
     %write('New position: '), write(pos(monster_position, R, C)), write('__'),
-    \+ member(pos(monster_position, R, C), Visited).
+    sort_by_column(GenState, SortTransformedPositionGemColumn ),
+    sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem ),
+    \+ member([pos(monster_position, R, C) | SortTransformedPositionGem], Visited).
     %write(Az), write(' is valid'), nl.
     
 transform(nord, [pos(T, R, C)| Tail], [ HP | TP], State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :- 
