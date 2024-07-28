@@ -9,6 +9,7 @@ prolog.consult("src/labirinto_first_strategy.pl")
 
 w = "wall"
 h = "hammer"
+hg = "hammer-gem"
 dw = "destroyable-wall"
 g = "gem"
 p = "portal"
@@ -34,13 +35,14 @@ immagini = {
     g: carica_immagine("src/img/gem.png"),
     p: carica_immagine("src/img/portal.png"),
     mp: carica_immagine("src/img/monster-position.png"),
-    " ": carica_immagine("src/img/empty-alternative.jpg")  
+    " ": carica_immagine("src/img/empty-alternative.jpg"),
+    hg: carica_immagine("src/img/hammer-gem.png")  
 }
 
 # Configurazione del labirinto
 labirinto = [
     [w, h, h, " ", " ", " ", " ", g],
-    [" ", h, " ", " ", w, " ", " ", " "],
+    [" ", " ", " ", " ", w, " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", w, g, " ", " ", " "],
@@ -84,52 +86,52 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
             return
         
         dir = direction[i-1]
-        from_visited_x, from_visited_y = generate_cordinate_from_pos(final_visited[i-1])
-        to_visited_x, to_visited_y = generate_cordinate_from_pos(final_visited[i])
+        from_visited_x, from_visited_y = generate_coordinate_from_pos(final_visited[i-1])
+        to_visited_x, to_visited_y = generate_coordinate_from_pos(final_visited[i])
         
         # Ottieni le coordinate delle celle da visitare
         x1, y1 = from_visited_x, from_visited_y
         x2, y2 = to_visited_x, to_visited_y
 
         coordinates = bresenham(x1, y1, x2, y2)
-        obstacle_positions = obstacle_detector(coordinates, targets={h, dw})
         
         # Definisci i movimenti per ciascuna direzione
         if dir == 'nord':
-            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
-            if(len(obstacle_positions) > 0):
-                for x, y in obstacle_positions:
+            if(len(coordinates) > 0):
+                for x, y in coordinates:
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'sud':
-            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
-            if(len(obstacle_positions) > 0):
-                for x, y in obstacle_positions:
+            if(len(coordinates) > 0):
+                for x, y in coordinates:
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'ovest':
-            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
-            if(len(obstacle_positions) > 0):
-                for x, y in obstacle_positions:
+            if(len(coordinates) > 0):
+                for x, y in coordinates:
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'est':
-            canvas.itemconfig(canvas_items[x1][y1], image=immagini[" "])
-            if(len(obstacle_positions) > 0):
-                for x, y in obstacle_positions:
+            if(len(coordinates) > 0):
+                for x, y in coordinates:
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
 
-        last_GemStates = gem_states[i-1]
-        
-        for gem in last_GemStates:
-            x, y = generate_cordinate_from_pos(gem)
-            canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
-        
-        new_GemStates = gem_states[i]
-        for gem in new_GemStates:
-            x, y = generate_cordinate_from_pos(gem)
-            canvas.itemconfig(canvas_items[x][y], image=immagini[g])
+        for gem in gem_states[i-1]:
+            old_x, old_y = generate_coordinate_from_pos(gem)
+            obstacle_detector_flag = len(obstacle_detector([(old_x, old_y)], targets={h})) > 0 
+            if(obstacle_detector_flag):
+                canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[h])
+            else:
+                canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
+
+        for gem in gem_states[i]:
+            new_x, new_y = generate_coordinate_from_pos(gem)
+            obstacle_detector_flag = len(obstacle_detector([(new_x, new_y)], targets={h})) > 0 
+            if(obstacle_detector_flag):
+                canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[hg])
+            else:
+                canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[g])
             
         root.after(1500, muovi_mostro_e_gemme, i+1)
         
@@ -169,7 +171,14 @@ def obstacle_detector(coordinates, targets):
             obstacle_positions.append((x, y))
     return obstacle_positions
 
-def generate_cordinate_from_pos(position):
+def extract_monster_position(final_visited):
+    monster_positions = []
+    for pos in final_visited:
+        mpos = pos[0]
+        monster_positions.append(mpos)
+    return monster_positions
+
+def generate_coordinate_from_pos(position):
     # Form the string 'pos(monster_position, x, y)' in position extract the cordinate
     x = position.split(',')[1]
     y = position.split(',')[2][:-1]
@@ -182,10 +191,11 @@ def risolvi_labirinto():
 
     disegna_labirinto(canvas, labirinto)
 
-    first_result = get_first_solution(prolog, "ricerca(Cammino, GemStates, FinalVisited)")
-    
+    first_result = get_first_solution(prolog, "ricerca_iterative_deepening(Cammino, GemStates, FinalVisited)")
+    final_visited = extract_monster_position(first_result['FinalVisited'])
+
     if first_result:
-        aggiorna_labirinto(labirinto, first_result['Cammino'], first_result['FinalVisited'][::-1], first_result['GemStates'])
+        aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], first_result['GemStates'])
         print("Soluzione trovata:", first_result['Cammino'])
     else:
         print("Nessuna soluzione trovata")
