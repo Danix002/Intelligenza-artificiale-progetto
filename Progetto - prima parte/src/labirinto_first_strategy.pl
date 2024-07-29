@@ -325,14 +325,14 @@ ricerca_iterative_deepening(Cammino, GemStates, FinalVisited):-
 iterative_deepening_search(Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
     profondity_search(Limit, pos(monster_position, R, C), Lpos, Cammino, Visited,  GemStates, FinalVisited, HammerTaked, HammerTaked1, [], FreeCellsFinal).
 
-iterative_deepening_search( Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
+iterative_deepening_search(Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
     \+ profondity_search(Limit, pos(monster_position, R, C), Lpos, Cammino, Visited,  GemStates, FinalVisited, HammerTaked, HammerTaked1, [], FreeCellsFinal),
     NewLimit is Limit + 1,
-    iterative_deepening_search( NewLimit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal).
+    iterative_deepening_search(NewLimit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal).
 
 profondity_search(_, pos(monster_position, MonsterRow, MonsterCol), GemState, [], Visited, [GemState|[]], FinalVisited,HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :- pos(portal, MonsterRow, MonsterCol), HammerTaked1 is HammerTaked, FreeCellsFinal = FreeCells, FinalVisited = Visited, !.
 
-profondity_search( Limit,  pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|SeqAzioni], Visited, [GemState| Tail], FinalVisited, HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :-
+profondity_search(Limit, pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|SeqAzioni], Visited, [GemState| Tail], FinalVisited, HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :-
     Limit > 0,
     applicable(
         Az, 
@@ -345,7 +345,7 @@ profondity_search( Limit,  pos(monster_position, MonsterRow, MonsterCol), GemSta
     sort_by_column(TransformedPositionGem, SortTransformedPositionGemColumn),
     sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem),
     NewLimit is Limit - 1,
-    profondity_search( NewLimit, TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [[TransformedPositionMonster | SortTransformedPositionGem] | Visited], Tail, FinalVisited, NewHammerTaked1, HammerTaked1, NewFreeCells, FreeCellsFinal).
+    profondity_search(NewLimit, TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [[TransformedPositionMonster | SortTransformedPositionGem] | Visited], Tail, FinalVisited, NewHammerTaked1, HammerTaked1, NewFreeCells, FreeCellsFinal).
 
 init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1, FreeCells, NewFreeCells) :-     
     sort_by_row([pos(monster_position, R, C)| Tail], State),

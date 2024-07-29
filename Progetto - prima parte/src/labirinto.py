@@ -51,6 +51,17 @@ labirinto = [
     [w, g, " ", p, w, w, " ", " "]
 ]
 
+monster_trace = [
+    [w, h, " ", " ", " ", " ", " ", g],
+    [" ", " ", " ", " ", w, " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", w, g, " ", " ", " "],
+    [" ", " ", " ", " ", w, w, " ", w],
+    [" ", dw, dw, dw, w, " ", " ", mp],
+    [w, g, " ", p, w, w, " ", " "]
+]
+
 canvas_items = []
 
 # Funzione per disegnare il labirinto
@@ -99,28 +110,36 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
         if dir == 'nord':
             if(len(coordinates) > 0):
                 for x, y in coordinates:
+                    monster_trace[x][y] = " "
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+            monster_trace[x2][y2] = mp
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'sud':
             if(len(coordinates) > 0):
                 for x, y in coordinates:
+                    monster_trace[x][y] = " "
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+            monster_trace[x2][y2] = mp
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'ovest':
             if(len(coordinates) > 0):
                 for x, y in coordinates:
+                    monster_trace[x][y] = " "
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+            monster_trace[x2][y2] = mp
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
         elif dir == 'est':
             if(len(coordinates) > 0):
                 for x, y in coordinates:
+                    monster_trace[x][y] = " "
                     canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+            monster_trace[x2][y2] = mp
             canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
 
         for gem in gem_states[i-1]:
             old_x, old_y = generate_coordinate_from_pos(gem)
             obstacle_detector_flag = len(obstacle_detector([(old_x, old_y)], targets={h})) > 0 
-            if(obstacle_detector_flag):
+            if(obstacle_detector_flag and monster_trace[old_x][old_y] == h):
                 canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[h])
             else:
                 canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
@@ -128,12 +147,12 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
         for gem in gem_states[i]:
             new_x, new_y = generate_coordinate_from_pos(gem)
             obstacle_detector_flag = len(obstacle_detector([(new_x, new_y)], targets={h})) > 0 
-            if(obstacle_detector_flag):
+            if(obstacle_detector_flag and monster_trace[new_x][new_y] == h):
                 canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[hg])
             else:
                 canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[g])
             
-        root.after(1500, muovi_mostro_e_gemme, i+1)
+        root.after(1500, muovi_mostro_e_gemme, i + 1)
         
         # Aggiorna la posizione del mostro
         posizione_mostro[0], posizione_mostro[1] = x2, y2

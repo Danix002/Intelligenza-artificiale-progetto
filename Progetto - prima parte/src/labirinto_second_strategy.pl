@@ -315,37 +315,39 @@ ricerca_a_star(Cammino, GemStates, FinalVisited):-
     pos(monster_position, R, C),
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
     has_hammer(HammerTaked),
-    iterative_deepening_search(1, [[pos(monster_position, R, C) | Lpos]], pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal),
+    ampiezza_search([[pos(monster_position, R, C) | Lpos]], pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal, [[pos(monster_position, R, C) | Lpos] | []]),
     write('gem states: '), print(GemStates), nl,
     write('position visited by monster: '), print(FinalVisited), nl,
     write('hammer taked: '), print(HammerTaked1), nl,
     write('free cells: '), print(FreeCellsFinal), nl,
     write('walk: '), print(Cammino), nl.
 
-iterative_deepening_search( Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
-    profondity_search(Limit, pos(monster_position, R, C), Lpos, Cammino, Visited,  GemStates, FinalVisited, HammerTaked, HammerTaked1, [], FreeCellsFinal).
+ampiezza_search(Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal, ToVisited):- finale(S), !.
 
-iterative_deepening_search( Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
-    \+ profondity_search(Limit, pos(monster_position, R, C), Lpos, Cammino, Visited,  GemStates, FinalVisited, HammerTaked, HammerTaked1, [], FreeCellsFinal),
-    NewLimit is Limit + 1,
-    iterative_deepening_search( NewLimit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal).
+ampiezza_search([[S,Cammino]|Tail],Visitati,Risultato):-
+    \+member(S,Visitati),!,
+    findall(Az,applicabile(Az,S),ListaAzioni),
+    genera_nuovi_stati([S,Cammino],ListaAzioni,ListaNuoviStati),
+    differenza(ListaNuoviStati,Tail,StatiDaAggiungere),
+    append(Tail,StatiDaAggiungere,NuovaTail),
+    ampiezza_search(NuovaTail,[S|Visitati],Risultato).
 
-profondity_search(_, pos(monster_position, MonsterRow, MonsterCol), GemState, [], Visited, [GemState|[]], FinalVisited,HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :- pos(portal, MonsterRow, MonsterCol), HammerTaked1 is HammerTaked, FreeCellsFinal = FreeCells, FinalVisited = Visited, !.
+ampiezza_search([_|Tail],Visitati,Risultato):- ampiezza(Tail,Visitati,Risultato).
 
-profondity_search( Limit,  pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|SeqAzioni], Visited, [GemState| Tail], FinalVisited, HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :-
-    Limit > 0,
-    applicable(
-        Az, 
-        pos(monster_position, MonsterRow, MonsterCol),
-        [pos(monster_position, MonsterRow, MonsterCol) | GemState],
-        HammerTaked,
-        FreeCells
-    ),
-    init_transform(Az, [pos(monster_position, MonsterRow, MonsterCol) | GemState], Visited, [TransformedPositionMonster | TransformedPositionGem], HammerTaked, NewHammerTaked1, FreeCells, NewFreeCells),
-    sort_by_column(TransformedPositionGem, SortTransformedPositionGemColumn),
-    sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem),
-    NewLimit is Limit - 1,
-    profondity_search( NewLimit, TransformedPositionMonster, TransformedPositionGem, SeqAzioni, [[TransformedPositionMonster | SortTransformedPositionGem] | Visited], Tail, FinalVisited, NewHammerTaked1, HammerTaked1, NewFreeCells, FreeCellsFinal).
+genera_nuovi_stati(_,[],[]).
+
+genera_nuovi_stati([S,Cammino],[Az|Tail], [[SNuovo,[Az|Cammino]]|ListaTail]):-
+    trasforma(Az,S,SNuovo),
+    genera_nuovi_stati([S,Cammino],Tail,ListaTail).
+
+differenza([],_,[]).
+
+differenza([[S,_]|Tail],B,Risultato):-
+    member([S,_],B),!,
+    differenza(Tail,B,Risultato).
+
+differenza([[S,Cammino]|Tail],B,[[S,Cammino]|RisTail]):-
+    differenza(Tail,B,RisTail).
 
 init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1, FreeCells, NewFreeCells) :-     
     sort_by_row([pos(monster_position, R, C)| Tail], State),
@@ -606,4 +608,3 @@ update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [pos(OldT, Ol
 update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [pos(T, R, C) | OldTail], [pos(T, R, C) | NewTail]) :-
     (T \= OldT; R \= OldR; C \= OldC),
     update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail, NewTail).
-
