@@ -311,7 +311,7 @@ applicable(ovest, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCe
     member(pos(gem, R, C1) , GemState),
     applicable(ovest, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
 
-ricerca_iterative_deepening(Cammino, GemStates, FinalVisited):-
+ricerca_a_star(Cammino, GemStates, FinalVisited):-
     pos(monster_position, R, C),
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
     has_hammer(HammerTaked),
@@ -322,7 +322,7 @@ ricerca_iterative_deepening(Cammino, GemStates, FinalVisited):-
     write('free cells: '), print(FreeCellsFinal), nl,
     write('walk: '), print(Cammino), nl.
 
-iterative_deepening_search(Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
+iterative_deepening_search( Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
     profondity_search(Limit, pos(monster_position, R, C), Lpos, Cammino, Visited,  GemStates, FinalVisited, HammerTaked, HammerTaked1, [], FreeCellsFinal).
 
 iterative_deepening_search( Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):-
