@@ -214,6 +214,8 @@ def risolvi_labirinto():
     final_visited = extract_monster_position(first_result['FinalVisited'])
 
     if first_result:
+        """for x, y in monster_trace:
+                monster_trace[x][y] = labirinto[x][y]"""
         aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], first_result['GemStates'])
         print("Soluzione trovata:", first_result['Cammino'])
     else:
