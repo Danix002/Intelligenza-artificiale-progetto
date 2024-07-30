@@ -208,14 +208,16 @@ def risolvi_labirinto():
     # Button cant't clicked
     button.config(state=tk.DISABLED)
 
+    for x in range(len(monster_trace)):
+        for y in range(len(monster_trace[x])):
+            monster_trace[x][y] = labirinto[x][y]
+
     disegna_labirinto(canvas, labirinto)
 
     first_result = get_first_solution(prolog, "ricerca_iterative_deepening(Cammino, GemStates, FinalVisited)")
     final_visited = extract_monster_position(first_result['FinalVisited'])
 
     if first_result:
-        """for x, y in monster_trace:
-                monster_trace[x][y] = labirinto[x][y]"""
         aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], first_result['GemStates'])
         print("Soluzione trovata:", first_result['Cammino'])
     else:
