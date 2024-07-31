@@ -315,7 +315,7 @@ ricerca_a_star(Cammino, GemStates, FinalVisited):-
     pos(monster_position, R, C),
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
     has_hammer(HammerTaked),
-    ampiezza_search([state([pos(monster_position, R, C) | Lpos], nothing, HammerTaked, [])], [pos(monster_position, R, C) | Lpos], HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal),
+    ampiezza_search([state([pos(monster_position, R, C) | Lpos], nothing, HammerTaked, [])], [], HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal),
     write('gem states: '), print(GemStates), nl,
     write('position visited by monster: '), print(FinalVisited), nl,
     write('hammer taked: '), print(HammerTaked1), nl,
@@ -326,7 +326,10 @@ ampiezza_search([state([pos(monster_position, R, C) | _], StateAction, HammerTak
     pos(portal, R, C), HammerTaked1 is HammerTaked, FreeCellsFinal = FreeCells, FinalVisited = Visited, !.
 
 ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells) | TailToVisit], Visited, HammerTaked1, [Action | TailPath], [GemState| Tail], FinalVisited, FreeCellsFinal):-
-    %check_visited(_, state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction), Visited),
+    %write('monster: '), print(pos(monster_position, MonsterRow, MonsterCol)), nl,
+    %write('Visited: '), write(Visited), nl,
+    %write('To Visit: '), write(TailToVisit), nl, 
+    check_visited(_, [pos(monster_position, MonsterRow, MonsterCol) | GemState], Visited),
     findall(
         Az,
         applicable(
@@ -339,24 +342,27 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
         ActionsList
     ),
     %write('GemState: '), print(GemState), nl,
-    write('Actions: '),
-    print(ActionsList), nl,
+    %write('Actions: '),
+    %print(ActionsList), nl,
     genera_transform(state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells), ActionsList, NewState, Visited),
-    write('NewState: '), print(NewState), nl,
+    %write('NewState: '), print(NewState), nl,
     difference(NewState, TailToVisit, StateToAdd),
-    write('StateToAdd Difference: '), print(StateToAdd), nl,
+    %write('StateToAdd Difference: '), print(StateToAdd), nl,
     append(TailToVisit, StateToAdd, NewTailToVisit),
     calculate_euristic_for_states(NewTailToVisit, NewTailToVisitWithCost),
-    write('NewTailToVisitWithCost: '), print(NewTailToVisitWithCost), nl,
+    %write('NewTailToVisitWithCost: '), print(NewTailToVisitWithCost), nl,
     sort_by_euristic(NewTailToVisitWithCost, NewTailToVisitSorted),
     %sort_by_euristic( [cost(state([pos(monster_position,7,7),pos(gem,7,1),pos(gem,4,4),pos(gem,4,7)],sud,0,[]),4),cost(state([pos(monster_position,6,5),pos(gem,7,1),pos(gem,4,4),pos(gem,0,1)],ovest,0,[]),5)],NewTailToVisitSorted)
-    write('NewTailToVisitSorted After sort: '), print(NewTailToVisitSorted), nl,
-    write('Visited: '), write(Visited), nl, nl, nl,
+    %write('NewTailToVisitSorted After sort: '), print(NewTailToVisitSorted), nl, nl, nl,
+    
     extract_first_element(NewTailToVisitSorted, state([pos(monster_position, R, C) | GState], Action, NewHammerTaked, NewFreeCells)),
-    ampiezza_search(NewTailToVisitSorted, [state([pos(monster_position, R, C) | GState], Action, NewHammerTaked, NewFreeCells) | Visited], HammerTaked1, TailPath, Tail, FinalVisited, FreeCellsFinal).
+    ampiezza_search(NewTailToVisitSorted,  [ [pos(monster_position, MonsterRow, MonsterCol) | GemState] | Visited], HammerTaked1, TailPath, Tail, FinalVisited, FreeCellsFinal).
 
 
-ampiezza_search([state(HeadState, StateAction) | TailToVisit], Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):- 
+ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells) | TailToVisit], Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):- 
+    \+ check_visited(_, [pos(monster_position, R, C) | GS], Visited),
+    %nl, print('ENTRATA #############################'), nl,
+    %print('Salto: '), print(pos(monster_position, R, C)), nl,
     ampiezza_search(TailToVisit, Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal).
 
 extract_first_element([Head | _], Head).
@@ -381,8 +387,8 @@ init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result, Hamme
     %write('nord'), nl,
     transform(nord, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('nord'), write(NewHammerTaked), nl
-    move_monster_position_to_front(ResultTMP, Result),
-    check_visited(nord, Result, Visited), !.
+    move_monster_position_to_front(ResultTMP, Result),!.
+    %check_visited(nord, Result, Visited), !.
 
 init_transform(sud, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_row([pos(monster_position, R, C)| Tail], State),
@@ -390,16 +396,16 @@ init_transform(sud, [pos(monster_position, R, C)| Tail], Visited, Result, Hammer
     %write('sud'), nl,
     transform(sud, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('sud'), write(NewHammerTaked), nl
-    move_monster_position_to_front(ResultTMP, Result),
-    check_visited(sud, Result, Visited), !.
+    move_monster_position_to_front(ResultTMP, Result),!.
+    %check_visited(sud, Result, Visited), !.
 
 init_transform(ovest, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
     %write('ovest'), nl,
     transform(ovest, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('ovest'), write(NewHammerTaked),
-    move_monster_position_to_front(ResultTMP, Result),
-    check_visited(ovest, Result, Visited), !.
+    move_monster_position_to_front(ResultTMP, Result), !.
+    %check_visited(ovest, Result, Visited), !.
 
 init_transform(est, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
@@ -407,8 +413,8 @@ init_transform(est, [pos(monster_position, R, C)| Tail], Visited, Result, Hammer
     %write('est'), nl,
     transform(est, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('est'), write(NewHammerTaked),
-    move_monster_position_to_front(ResultTMP, Result),
-    check_visited(est, Result, Visited), !.
+    move_monster_position_to_front(ResultTMP, Result), !.
+    %check_visited(est, Result, Visited), !.
 
 check_visited(Az, [pos(monster_position, R, C) | GemState], Visited) :- 
     %write('Checking '), write(Az), nl,
@@ -666,3 +672,5 @@ update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [pos(OldT, Ol
 update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [pos(T, R, C) | OldTail], [pos(T, R, C) | NewTail]) :-
     (T \= OldT; R \= OldR; C \= OldC),
     update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail, NewTail).
+
+
