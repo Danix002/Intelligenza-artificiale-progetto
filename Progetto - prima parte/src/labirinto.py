@@ -15,6 +15,7 @@ g = "gem"
 p = "portal"
 mp = "monster-position"
 mt = "monster-trace"
+pg = "path-gem"
 
 # Posizione iniziale del mostro
 posizione_mostro = [6, 7]
@@ -38,7 +39,8 @@ immagini = {
     mp: carica_immagine("src/img/monster-position.png"),
     " ": carica_immagine("src/img/empty-alternative.jpg"),
     hg: carica_immagine("src/img/hammer-gem.png"),
-    mt: carica_immagine("src/img/monster-path.jpg") 
+    mt: carica_immagine("src/img/monster-path.jpg"),
+    pg: carica_immagine("src/img/path-gem.png")
 }
 
 # Configurazione del labirinto
@@ -101,7 +103,7 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
             # Evidenziare il percorso del mostro
             for gem in gem_states[i-1]:
                 final_gem_x, final_gem_y = generate_coordinate_from_pos(gem)
-                monster_trace[final_gem_x][final_gem_y] = g
+                monster_trace[final_gem_x][final_gem_y] = pg
             disegna_labirinto(canvas=canvas, labirinto=monster_trace)
             button.config(state=tk.NORMAL)  
             return

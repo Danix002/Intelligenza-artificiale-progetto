@@ -327,7 +327,7 @@ ampiezza_search([state([pos(monster_position, R, C) | _], StateAction, HammerTak
 
 ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells) | TailToVisit], Visited, HammerTaked1, [Action | TailPath], [GemState| Tail], FinalVisited, FreeCellsFinal):-
     %write('monster: '), print(pos(monster_position, MonsterRow, MonsterCol)), nl,
-    %write('Visited: '), write(Visited), nl,
+    write('Visited: '), write(Visited), nl,
     %write('To Visit: '), write(TailToVisit), nl, 
     check_visited(_, [pos(monster_position, MonsterRow, MonsterCol) | GemState], Visited),
     findall(
@@ -352,21 +352,19 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
     calculate_euristic_for_states(NewTailToVisit, NewTailToVisitWithCost),
     %write('NewTailToVisitWithCost: '), print(NewTailToVisitWithCost), nl,
     sort_by_euristic(NewTailToVisitWithCost, NewTailToVisitSorted),
-    %sort_by_euristic( [cost(state([pos(monster_position,7,7),pos(gem,7,1),pos(gem,4,4),pos(gem,4,7)],sud,0,[]),4),cost(state([pos(monster_position,6,5),pos(gem,7,1),pos(gem,4,4),pos(gem,0,1)],ovest,0,[]),5)],NewTailToVisitSorted)
     %write('NewTailToVisitSorted After sort: '), print(NewTailToVisitSorted), nl, nl, nl,
-    
     extract_first_element(NewTailToVisitSorted, state([pos(monster_position, R, C) | GState], Action, NewHammerTaked, NewFreeCells)),
-    ampiezza_search(NewTailToVisitSorted,  [ [pos(monster_position, MonsterRow, MonsterCol) | GemState] | Visited], HammerTaked1, TailPath, Tail, FinalVisited, FreeCellsFinal).
-
+    ampiezza_search(NewTailToVisitSorted, [[pos(monster_position, MonsterRow, MonsterCol) | GemState] | Visited], HammerTaked1, TailPath, Tail, FinalVisited, FreeCellsFinal).
 
 ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells) | TailToVisit], Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):- 
     \+ check_visited(_, [pos(monster_position, R, C) | GS], Visited),
     %nl, print('ENTRATA #############################'), nl,
+    write('Visited 2: '), write(Visited), nl,
     %print('Salto: '), print(pos(monster_position, R, C)), nl,
     ampiezza_search(TailToVisit, Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal).
 
 extract_first_element([Head | _], Head).
-%TODO lista NewFreeCells
+
 genera_transform(_, [], [], Visited).
 
 genera_transform(state(HeadState, StateAction, HammerTaked, FreeCells), [HeadAction | TailAction], [state([TransformedPositionMonster | TransformedPositionGem], HeadAction, HammerTaked1, NewFreeCells) | Tail], Visited):-
@@ -420,11 +418,11 @@ check_visited(Az, [pos(monster_position, R, C) | GemState], Visited) :-
     %write('Checking '), write(Az), nl,
     %write('visited: '), write(Visited), nl,
     %print([pos(monster_position, R, C) | GemState]), nl,
-   % write('New position: '), write(pos(monster_position, R, C)), write('__'),
-    sort_by_column(GemState, SortTransformedPositionGemColumn ),
-    sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem ),
+    %write('New position: '), write(pos(monster_position, R, C)), write('__'),
+    sort_by_column(GemState, SortTransformedPositionGemColumn),
+    sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem),
     \+ member([pos(monster_position, R, C) | SortTransformedPositionGem], Visited).
-   % write(Az), write(' is valid'), nl.
+    %write(Az), write(' is valid'), nl.
     
 transform(nord, [pos(T, R, C)| Tail], [HP | TP], State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :- 
     det_position_nord(pos(T, R, C), R1, State, HammerTaked, NewHammerTaked,  FreeCells, NewFreeCells),
@@ -607,8 +605,8 @@ extract_values([], []) :- true.
 extract_values([_-Value | RestPairs], [Value | RestValues]) :-
     extract_values(RestPairs, RestValues).
 
-
 extract_state_values([], []).
+
 extract_state_values([_-cost(State, Cost) | RestPairs], [State | RestValues]) :-
     extract_state_values(RestPairs, RestValues).
 
