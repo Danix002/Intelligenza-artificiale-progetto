@@ -409,7 +409,7 @@ init_transform(est, [pos(monster_position, R, C)| Tail], Visited, Result, Hammer
     sort_by_column([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),  
     %write('est'), nl,
-    transform(est, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
+    transform(est, ReverseState, ResultTMP, [pos(monster_position, R, C) | Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('est'), write(NewHammerTaked),
     move_monster_position_to_front(ResultTMP, Result), !.
     %check_visited(est, Result, Visited), !.
@@ -420,7 +420,7 @@ check_visited(Az, [pos(monster_position, R, C) | GemState], Visited) :-
     %print([pos(monster_position, R, C) | GemState]), nl,
     %write('New position: '), write(pos(monster_position, R, C)), write('__'),
     sort_by_column(GemState, SortTransformedPositionGemColumn),
-    sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem),
+    sort_by_row(SortTransformedPositionGemColumn, SortTransformedPositionGem),
     \+ member([pos(monster_position, R, C) | SortTransformedPositionGem], Visited).
     %write(Az), write(' is valid'), nl.
     
