@@ -354,7 +354,9 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
     sort_by_euristic(NewTailToVisitWithCost, NewTailToVisitSorted),
     %write('NewTailToVisitSorted After sort: '), print(NewTailToVisitSorted), nl, nl, nl,
     extract_first_element(NewTailToVisitSorted, state([pos(monster_position, R, C) | GState], Action, NewHammerTaked, NewFreeCells)),
-    ampiezza_search(NewTailToVisitSorted, [[pos(monster_position, MonsterRow, MonsterCol) | GemState] | Visited], HammerTaked1, TailPath, Tail, FinalVisited, FreeCellsFinal).
+    sort_by_column(GemState, SortTransformedPositionGemColumn),
+    sort_by_row(SortTransformedPositionGemColumn, SortTransformedPositionGem),
+    ampiezza_search(NewTailToVisitSorted, [[pos(monster_position, MonsterRow, MonsterCol) | SortTransformedPositionGem] | Visited], HammerTaked1, TailPath, Tail, FinalVisited, FreeCellsFinal).
 
 ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells) | TailToVisit], Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):- 
     \+ check_visited(_, [pos(monster_position, R, C) | GS], Visited),
