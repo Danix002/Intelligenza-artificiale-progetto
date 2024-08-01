@@ -5,7 +5,7 @@ from pyswip import Prolog
 
 # Inizializza la sessione di Prolog
 prolog = Prolog()
-prolog.consult("src/labirinto_first_strategy.pl")
+prolog.consult("src/labirinto_second_strategy.pl")
 
 w = "wall"
 h = "hammer"
@@ -47,23 +47,23 @@ immagini = {
 labirinto = [
     [w, h, " ", " ", " ", " ", " ", g],
     [" ", " ", " ", " ", w, " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", p, " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", w, g, " ", " ", " "],
     [" ", " ", " ", " ", w, w, " ", w],
     [" ", dw, dw, dw, w, " ", " ", mp],
-    [w, g, " ", p, w, w, " ", " "]
+    [w, g, " ", " ", w, w, " ", " "]
 ]
 
 monster_trace = [
     [w, h, " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", w, " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [" ", p, " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", w, " ", " ", " ", " "],
     [" ", " ", " ", " ", w, w, " ", w],
     [" ", dw, dw, dw, w, " ", " ", mp],
-    [w, " ", " ", p, w, w, " ", " "]
+    [w, " ", " ", " ", w, w, " ", " "]
 ]
 
 canvas_items = []
@@ -103,7 +103,10 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
             # Evidenziare il percorso del mostro
             for gem in gem_states[i-1]:
                 final_gem_x, final_gem_y = generate_coordinate_from_pos(gem)
-                monster_trace[final_gem_x][final_gem_y] = pg
+                if(monster_trace[final_gem_x][final_gem_y] == mt):
+                    monster_trace[final_gem_x][final_gem_y] = pg
+                else:
+                    monster_trace[final_gem_x][final_gem_y] = g
             disegna_labirinto(canvas=canvas, labirinto=monster_trace)
             button.config(state=tk.NORMAL)  
             return
@@ -230,7 +233,7 @@ def risolvi_labirinto():
 
     disegna_labirinto(canvas, labirinto)
 
-    first_result = get_first_solution(prolog, "ricerca_iterative_deepening(Cammino, GemStates, FinalVisited)")
+    first_result = get_first_solution(prolog, "ricerca_a_star(Cammino, GemStates, FinalVisited)")
     final_visited = extract_monster_position(first_result['FinalVisited'])
 
     if first_result:

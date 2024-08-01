@@ -327,7 +327,7 @@ ampiezza_search([state([pos(monster_position, R, C) | _], StateAction, HammerTak
 
 ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells) | TailToVisit], Visited, HammerTaked1, [Action | TailPath], [GemState| Tail], FinalVisited, FreeCellsFinal):-
     %write('monster: '), print(pos(monster_position, MonsterRow, MonsterCol)), nl,
-    write('Visited: '), write(Visited), nl,
+    %write('Visited: '), write(Visited), nl,
     %write('To Visit: '), write(TailToVisit), nl, 
     check_visited(_, [pos(monster_position, MonsterRow, MonsterCol) | GemState], Visited),
     findall(
@@ -361,7 +361,6 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
 ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells) | TailToVisit], Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):- 
     \+ check_visited(_, [pos(monster_position, R, C) | GS], Visited),
     %nl, print('ENTRATA #############################'), nl,
-    write('Visited 2: '), write(Visited), nl,
     %print('Salto: '), print(pos(monster_position, R, C)), nl,
     ampiezza_search(TailToVisit, Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal).
 
