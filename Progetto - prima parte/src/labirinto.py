@@ -217,7 +217,14 @@ def generate_coordinate_from_pos(position):
     x = position.split(',')[1]
     y = position.split(',')[2][:-1]
     return int(x), int(y)
-    
+
+def extract_gemstates(visited):
+    gemstates = []
+    for pos in visited:
+        #add to gemstates elment from pos[1] to the end
+        gemstates.append(pos[1:])
+    return gemstates
+       
 # Funzione per risolvere il labirinto con Prolog
 def risolvi_labirinto():
     # Button cant't clicked
@@ -233,11 +240,13 @@ def risolvi_labirinto():
 
     disegna_labirinto(canvas, labirinto)
 
-    first_result = get_first_solution(prolog, "ricerca_a_star(Cammino, GemStates, FinalVisited)")
+    first_result = get_first_solution(prolog, "ricerca_a_star(Cammino, FinalVisited)")
     final_visited = extract_monster_position(first_result['FinalVisited'])
-
+    Gemstates = extract_gemstates(first_result['FinalVisited'])
+    
+        
     if first_result:
-        aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], first_result['GemStates'])
+        aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], Gemstates[::-1])
         print("Soluzione trovata:", first_result['Cammino'])
     else:
         print("Nessuna soluzione trovata")

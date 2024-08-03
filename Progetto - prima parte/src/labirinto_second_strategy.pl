@@ -18,7 +18,7 @@ pos(empty, 1, 6).
 pos(empty, 1, 7).
 
 pos(empty, 2, 0).
-pos(empty, 2, 1).
+pos(portal, 2, 1).
 pos(empty, 2, 2).
 pos(empty, 2, 3).
 pos(empty, 2, 4).
@@ -65,7 +65,7 @@ pos(monster_position, 6, 7).
 pos(wall, 7, 0).
 pos(gem, 7, 1).
 pos(empty, 7, 2).
-pos(portal, 7, 3).
+pos(empty, 7, 3).
 pos(wall, 7, 4).
 pos(wall, 7, 5).
 pos(empty, 7, 6).
@@ -311,11 +311,12 @@ applicable(ovest, pos(gem, R, C), [MonsterState | GemState], HammerTaked, FreeCe
     member(pos(gem, R, C1) , GemState),
     applicable(ovest, pos(gem, R, C1), [MonsterState | GemState], HammerTaked, FreeCells).
 
-ricerca_a_star(Cammino, GemStates, FinalVisited):-
+ricerca_a_star(Cammino, FinalVisited):-
     pos(monster_position, R, C),
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
     has_hammer(HammerTaked),
-    ampiezza_search([state([pos(monster_position, R, C) | Lpos], nothing, HammerTaked, [], 0, -1)], [], HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal),
+    ampiezza_search([state([pos(monster_position, R, C) | Lpos], nothing, HammerTaked, [], 0, -1)], [], HammerTaked1, Cammino, FinalVisitedPosition, FreeCellsFinal),
+    extrct_state_from_visited(FinalVisitedPosition, FinalVisited),
     nl, nl, write(Cammino), nl, nl.
     %write('gem states: '), print(GemStates), nl,
     %write('position visited by monster: '), print(FinalVisited), nl.
@@ -323,13 +324,17 @@ ricerca_a_star(Cammino, GemStates, FinalVisited):-
     %write('free cells: '), print(FreeCellsFinal), nl,
     %write('walk: '), print(Cammino), nl.
 
+extrct_state_from_visited([], []).  
 
-ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells, Name, Parent) | TailToVisit], Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):- 
-    pos(portal, R, C), HammerTaked1 is HammerTaked, FreeCellsFinal = FreeCells, FinalVisited = [  visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction )  | Visited], !,
-    generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ), Visited, Path ),
-    Cammino = Path.
+extrct_state_from_visited([visited(State, _, _, _) | Tail], [State | TailState]):-
+    extrct_state_from_visited(Tail, TailState).
 
-ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent) | TailToVisit], Visited, HammerTaked1, Cammino, [GemState| Tail], FinalVisited, FreeCellsFinal):-
+ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells, Name, Parent) | TailToVisit], Visited, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal):- 
+    pos(portal, R, C), HammerTaked1 is HammerTaked, FreeCellsFinal = FreeCells, 
+    generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ), Visited, Path, FinalVisited),
+    Cammino = Path, !.
+
+ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent) | TailToVisit], Visited, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal):-
     %write('monster: '), print(pos(monster_position, MonsterRow, MonsterCol)), nl,
     %write('Visited: '), write(Visited), nl,
     %write('To Visit: '), write(TailToVisit), nl, 
@@ -366,13 +371,13 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
     sort_by_column(GemState, SortTransformedPositionGemColumn),
     sort_by_row(SortTransformedPositionGemColumn, SortTransformedPositionGem),
     %write('sort by column and row'), nl,
-    ampiezza_search(NewTailToVisitSorted, [ visited([pos(monster_position, MonsterRow, MonsterCol) | SortTransformedPositionGem], Name, Parent, StateAction ) | Visited], HammerTaked1, Cammino, Tail, FinalVisited, FreeCellsFinal).
+    ampiezza_search(NewTailToVisitSorted, [ visited([pos(monster_position, MonsterRow, MonsterCol) | SortTransformedPositionGem], Name, Parent, StateAction ) | Visited], HammerTaked1, Cammino, FinalVisited, FreeCellsFinal).
 
-ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells, Name, Parent) | TailToVisit], Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal):- 
+ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTaked, FreeCells, Name, Parent) | TailToVisit], Visited, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal):- 
     \+ check_visited(_, visited([pos(monster_position, R, C) | GS], Name, Parent), Visited),
     %nl, print('ENTRATA #############################'), nl,
     %print('Salto: '), print(pos(monster_position, R, C)), nl,
-    ampiezza_search(TailToVisit, Visited, HammerTaked1, Cammino, GemStates, FinalVisited, FreeCellsFinal).
+    ampiezza_search(TailToVisit, Visited, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal).
 
 extract_first_element([Head | _], Head).
 
@@ -685,12 +690,12 @@ update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), [pos(T, R, C)
     update_value_in_list(pos(NewT, NewR, NewC), pos(OldT, OldR, OldC), OldTail, NewTail).
 
 
-generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ), [ visited(Pos, N, PN, PAction) | Tail], [StateAction | TPath] ) :-
+generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ), [ visited(Pos, N, PN, PAction) | Tail], [StateAction | TPath], [visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ) | TailVisited] ) :-
     Parent = N,
-    generate_action_path( visited(Pos, N, PN, PAction), Tail, TPath ).
+    generate_action_path( visited(Pos, N, PN, PAction), Tail, TPath, TailVisited ).
 
-generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ), [ visited(Pos, N, PN, PAction) | Tail], Path) :-
+generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ), [ visited(Pos, N, PN, PAction) | Tail], Path, Visited) :-
     Parent \= N,
-    generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ) , Tail, Path ).
+    generate_action_path( visited([pos(monster_position, R, C) | GS], Name, Parent, StateAction ) , Tail, Path, Visited ).
 
-generate_action_path( visited([pos(monster_position, R, C) | GS], Name, -1, StateAction ), [], [StateAction]) :- true.
+generate_action_path( visited([pos(monster_position, R, C) | GS], Name, -1, StateAction ), [], [StateAction], [visited([pos(monster_position, R, C) | GS], Name, -1, StateAction )]) :- true.
