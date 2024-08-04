@@ -3,9 +3,14 @@ from tkinter import font
 from PIL import Image, ImageTk
 from pyswip import Prolog
 
+first_strategy_path = "src/labirinto_first_strategy.pl"
+first_strategy_goal = "ricerca_iterative_deepening(Cammino, FinalVisited)"
+second_strategy_path = "src/labirinto_second_strategy.pl"
+second_strategy_goal = "ricerca_a_star(Cammino, FinalVisited)"
+
 # Inizializza la sessione di Prolog
 prolog = Prolog()
-prolog.consult("src/labirinto_second_strategy.pl")
+prolog.consult(first_strategy_path)
 
 w = "wall"
 h = "hammer"
@@ -45,25 +50,25 @@ immagini = {
 
 # Configurazione del labirinto
 labirinto = [
-    [w, h, " ", " ", " ", " ", " ", g],
-    [" ", " ", " ", " ", w, " ", " ", " "],
-    [" ", p, " ", " ", " ", " ", " ", " "],
+    [" ", p, " ", " ", " ", " ", " ", g],
     [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", w, g, " ", " ", " "],
-    [" ", " ", " ", " ", w, w, " ", w],
-    [" ", dw, dw, dw, w, " ", " ", mp],
-    [w, g, " ", " ", w, w, " ", " "]
+    [" ", p, " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", p, " ", " ", " "],
+    [" ", " ", " ", " ", g, " ", " ", " "],
+    [p, " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", mp],
+    [" ", g, " ", " ", " ", " ", " ", " "]
 ]
 
 monster_trace = [
-    [w, h, " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", w, " ", " ", " "],
     [" ", p, " ", " ", " ", " ", " ", " "],
     [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", w, " ", " ", " ", " "],
-    [" ", " ", " ", " ", w, w, " ", w],
-    [" ", dw, dw, dw, w, " ", " ", mp],
-    [w, " ", " ", " ", w, w, " ", " "]
+    [" ", p, " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", p, " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", " "],
+    [p, " ", " ", " ", " ", " ", " ", " "],
+    [" ", " ", " ", " ", " ", " ", " ", mp],
+    [" ", " ", " ", " ", " ", " ", " ", " "]
 ]
 
 canvas_items = []
@@ -157,7 +162,10 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
             if(obstacle_detector_flag and monster_trace[old_x][old_y] == h):
                 canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[h])
             else:
-                canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
+                if(monster_trace[old_x][old_y] == mp):
+                    canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[mp])
+                else:
+                    canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
         
         for gem in gem_states[i]:
             new_x, new_y = generate_coordinate_from_pos(gem)
@@ -240,11 +248,10 @@ def risolvi_labirinto():
 
     disegna_labirinto(canvas, labirinto)
 
-    first_result = get_first_solution(prolog, "ricerca_a_star(Cammino, FinalVisited)")
+    first_result = get_first_solution(prolog, first_strategy_goal)
     final_visited = extract_monster_position(first_result['FinalVisited'])
     Gemstates = extract_gemstates(first_result['FinalVisited'])
     
-        
     if first_result:
         aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], Gemstates[::-1])
         print("Soluzione trovata:", first_result['Cammino'])
@@ -252,7 +259,7 @@ def risolvi_labirinto():
         print("Nessuna soluzione trovata")
         # Button can be clicked
         button.config(state=tk.NORMAL)
-
+    
 # Configurazione del canvas
 canvas = tk.Canvas(root, width=640, height=640)  # Dimensione del canvas aumentata
 canvas.pack()

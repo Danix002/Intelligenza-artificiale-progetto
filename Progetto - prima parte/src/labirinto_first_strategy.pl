@@ -1,21 +1,23 @@
 % Definizione del labirinto
 pos(wall, 0, 0).
-pos(hammer, 0, 1).
+pos(empty, 0, 1).
 pos(empty, 0, 2).
 pos(empty, 0, 3).
 pos(empty, 0, 4).
 pos(empty, 0, 5).
 pos(empty, 0, 6).
 pos(gem, 0, 7).
+pos(empty, 0, 8).
 
 pos(empty, 1, 0).
 pos(empty, 1, 1).
 pos(empty, 1, 2).
 pos(empty, 1, 3).
-pos(wall, 1, 4).
+pos(empty, 1, 4).
 pos(empty, 1, 5).
 pos(empty, 1, 6).
 pos(empty, 1, 7).
+pos(empty, 1, 8).
 
 pos(empty, 2, 0).
 pos(portal, 2, 1).
@@ -25,51 +27,67 @@ pos(empty, 2, 4).
 pos(empty, 2, 5).
 pos(empty, 2, 6).
 pos(empty, 2, 7).
+pos(empty, 2, 8).
 
 pos(empty, 3, 0).
 pos(empty, 3, 1).
 pos(empty, 3, 2).
 pos(empty, 3, 3).
 pos(empty, 3, 4).
-pos(empty, 3, 5).
-pos(empty, 3, 6).
-pos(empty, 3, 7).
+pos(destroyable_wall, 3, 5).
+pos(destroyable_wall, 3, 6).
+pos(destroyable_wall, 3, 7).
+pos(wall, 3, 8).
 
 pos(empty, 4, 0).
 pos(empty, 4, 1).
 pos(empty, 4, 2).
-pos(wall, 4, 3).
+pos(empty, 4, 3).
 pos(gem, 4, 4).
-pos(empty, 4, 5).
+pos(destroyable_wall, 4, 5).
 pos(empty, 4, 6).
 pos(empty, 4, 7).
+pos(empty, 4, 8).
 
 pos(empty, 5, 0).
 pos(empty, 5, 1).
 pos(empty, 5, 2).
 pos(empty, 5, 3).
-pos(wall, 5, 4).
-pos(wall, 5, 5).
+pos(empty, 5, 4).
+pos(destroyable_wall, 5, 5).
 pos(empty, 5, 6).
-pos(wall, 5, 7).
+pos(empty, 5, 7).
+pos(empty, 5, 8).
 
 pos(empty, 6, 0).
-pos(destroyable_wall, 6, 1).
-pos(destroyable_wall, 6, 2).
-pos(destroyable_wall, 6, 3).
-pos(wall, 6, 4).
-pos(empty, 6, 5).
+pos(empty, 6, 1).
+pos(empty, 6, 2).
+pos(hammer, 6, 3).
+pos(empty, 6, 4).
+pos(destroyable_wall, 6, 5).
 pos(empty, 6, 6).
 pos(monster_position, 6, 7).
+pos(empty, 6, 8).
 
-pos(wall, 7, 0).
+pos(empty, 7, 0).
 pos(gem, 7, 1).
 pos(empty, 7, 2).
 pos(empty, 7, 3).
-pos(wall, 7, 4).
-pos(wall, 7, 5).
+pos(empty, 7, 4).
+pos(destroyable_wall, 7, 5).
 pos(empty, 7, 6).
 pos(empty, 7, 7).
+pos(empty, 7, 8).
+
+pos(empty, 8, 0).
+pos(empty, 8, 1).
+pos(empty, 8, 2).
+pos(empty, 8, 3).
+pos(gem, 8, 4).
+pos(destroyable_wall, 8, 5).
+pos(empty, 8, 6).
+pos(hammer, 8, 7).
+pos(empty, 8, 8).
 
 azione(nord).
 azione(sud).
@@ -315,10 +333,10 @@ ricerca_iterative_deepening(Cammino, FinalVisited):-
     pos(monster_position, R, C),
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
     has_hammer(HammerTaked),
-    iterative_deepening_search(1, [[pos(monster_position, R, C) | Lpos]], pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal),
-    write('position visited by monster: '), print(FinalVisited), nl,
-    write('hammer taked: '), print(HammerTaked1), nl,
-    write('free cells: '), print(FreeCellsFinal), nl,
+    iterative_deepening_search(1, [[pos(monster_position, R, C) | Lpos]], pos(monster_position, R, C), Lpos, HammerTaked, _, Cammino, FinalVisited, _),
+    %write('position visited by monster: '), print(FinalVisited), nl,
+    %write('hammer taked: '), print(HammerTaked1), nl,
+    %write('free cells: '), print(FreeCellsFinal), nl,
     write('walk: '), print(Cammino), nl.
 
 iterative_deepening_search(Limit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal):-
@@ -329,7 +347,7 @@ iterative_deepening_search(Limit, Visited, pos(monster_position, R, C), Lpos, Ha
     NewLimit is Limit + 1,
     iterative_deepening_search(NewLimit, Visited, pos(monster_position, R, C), Lpos, HammerTaked, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal).
 
-profondity_search(_, pos(monster_position, MonsterRow, MonsterCol), GemState, [], Visited, FinalVisited,HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :- pos(portal, MonsterRow, MonsterCol), HammerTaked1 is HammerTaked, FreeCellsFinal = FreeCells, FinalVisited = Visited, !.
+profondity_search(_, pos(monster_position, MonsterRow, MonsterCol), _, [], Visited, FinalVisited,HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :- pos(portal, MonsterRow, MonsterCol), HammerTaked1 is HammerTaked, FreeCellsFinal = FreeCells, FinalVisited = Visited, !.
 
 profondity_search(Limit, pos(monster_position, MonsterRow, MonsterCol), GemState, [Az|SeqAzioni], Visited, FinalVisited, HammerTaked, HammerTaked1, FreeCells, FreeCellsFinal) :-
     Limit > 0,
@@ -348,7 +366,6 @@ profondity_search(Limit, pos(monster_position, MonsterRow, MonsterCol), GemState
 
 init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1, FreeCells, NewFreeCells) :-     
     sort_by_row([pos(monster_position, R, C)| Tail], State),
-    %write('nord'), nl,
     transform(nord, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('nord'), write(NewHammerTaked), nl
     move_monster_position_to_front(ResultTMP, Result),
@@ -357,7 +374,6 @@ init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result, Hamme
 init_transform(sud, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_row([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),
-    %write('sud'), nl,
     transform(sud, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('sud'), write(NewHammerTaked), nl
     move_monster_position_to_front(ResultTMP, Result),
@@ -365,7 +381,6 @@ init_transform(sud, [pos(monster_position, R, C)| Tail], Visited, Result, Hammer
 
 init_transform(ovest, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
-    %write('ovest'), nl,
     transform(ovest, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
     %write('ovest'), write(NewHammerTaked),
     move_monster_position_to_front(ResultTMP, Result),
