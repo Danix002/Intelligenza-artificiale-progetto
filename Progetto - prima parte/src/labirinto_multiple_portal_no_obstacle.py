@@ -96,91 +96,96 @@ def get_first_solution(prolog, query):
 
 # Funzione per aggiornare il labirinto con la direzione del movimento
 def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
-    global posizione_mostro
-
     x, y = posizione_mostro[0], posizione_mostro[1]
     monster_trace[x][y] = mt
 
     print(final_visited)
 
     def muovi_mostro_e_gemme(i):
-        if i >= len(final_visited):
-            # Evidenziare il percorso del mostro
+        x1 = 0 
+        x2 = 0 
+        y1 = 0 
+        y2 = 0
+        if(i == 0):
+            disegna_labirinto(canvas=canvas, labirinto=labirinto) 
+        else:
+            if i >= len(final_visited):
+                # Evidenziare il percorso del mostro
+                for gem in gem_states[i-1]:
+                    final_gem_x, final_gem_y = generate_coordinate_from_pos(gem)
+                    if(monster_trace[final_gem_x][final_gem_y] == mt):
+                        monster_trace[final_gem_x][final_gem_y] = pg
+                    else:
+                        monster_trace[final_gem_x][final_gem_y] = g
+                disegna_labirinto(canvas=canvas, labirinto=monster_trace)
+                button.config(state=tk.NORMAL)  
+                return
+
+            dir = direction[i-1]
+            from_visited_x, from_visited_y = generate_coordinate_from_pos(final_visited[i-1])
+            to_visited_x, to_visited_y = generate_coordinate_from_pos(final_visited[i])
+            
+            # Ottieni le coordinate delle celle da visitare
+            x1, y1 = from_visited_x, from_visited_y
+            x2, y2 = to_visited_x, to_visited_y
+
+            coordinates = bresenham(x1, y1, x2, y2)
+            
+            # Definisci i movimenti per ciascuna direzione
+            if dir == 'nord':
+                if(len(coordinates) > 0):
+                    for x, y in coordinates:
+                        monster_trace[x][y] = mt
+                        canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+                monster_trace[x2][y2] = mp
+                canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
+            elif dir == 'sud':
+                if(len(coordinates) > 0):
+                    for x, y in coordinates:
+                        monster_trace[x][y] = mt
+                        canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+                monster_trace[x2][y2] = mp
+                canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
+            elif dir == 'ovest':
+                if(len(coordinates) > 0):
+                    for x, y in coordinates:
+                        monster_trace[x][y] = mt
+                        canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+                monster_trace[x2][y2] = mp
+                canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
+            elif dir == 'est':
+                if(len(coordinates) > 0):
+                    for x, y in coordinates:
+                        monster_trace[x][y] = mt
+                        canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
+                monster_trace[x2][y2] = mp
+                canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
+
             for gem in gem_states[i-1]:
-                final_gem_x, final_gem_y = generate_coordinate_from_pos(gem)
-                if(monster_trace[final_gem_x][final_gem_y] == mt):
-                    monster_trace[final_gem_x][final_gem_y] = pg
+                old_x, old_y = generate_coordinate_from_pos(gem)
+                obstacle_detector_flag = len(obstacle_detector([(old_x, old_y)], targets={h})) > 0 
+                if(obstacle_detector_flag and monster_trace[old_x][old_y] == h):
+                    canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[h])
                 else:
-                    monster_trace[final_gem_x][final_gem_y] = g
-            disegna_labirinto(canvas=canvas, labirinto=monster_trace)
-            button.config(state=tk.NORMAL)  
-            return
-        
-        dir = direction[i-1]
-        from_visited_x, from_visited_y = generate_coordinate_from_pos(final_visited[i-1])
-        to_visited_x, to_visited_y = generate_coordinate_from_pos(final_visited[i])
-        
-        # Ottieni le coordinate delle celle da visitare
-        x1, y1 = from_visited_x, from_visited_y
-        x2, y2 = to_visited_x, to_visited_y
-
-        coordinates = bresenham(x1, y1, x2, y2)
-        
-        # Definisci i movimenti per ciascuna direzione
-        if dir == 'nord':
-            if(len(coordinates) > 0):
-                for x, y in coordinates:
-                    monster_trace[x][y] = mt
-                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
-            monster_trace[x2][y2] = mp
-            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
-        elif dir == 'sud':
-            if(len(coordinates) > 0):
-                for x, y in coordinates:
-                    monster_trace[x][y] = mt
-                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
-            monster_trace[x2][y2] = mp
-            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
-        elif dir == 'ovest':
-            if(len(coordinates) > 0):
-                for x, y in coordinates:
-                    monster_trace[x][y] = mt
-                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
-            monster_trace[x2][y2] = mp
-            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
-        elif dir == 'est':
-            if(len(coordinates) > 0):
-                for x, y in coordinates:
-                    monster_trace[x][y] = mt
-                    canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
-            monster_trace[x2][y2] = mp
-            canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
-
-        for gem in gem_states[i-1]:
-            old_x, old_y = generate_coordinate_from_pos(gem)
-            obstacle_detector_flag = len(obstacle_detector([(old_x, old_y)], targets={h})) > 0 
-            if(obstacle_detector_flag and monster_trace[old_x][old_y] == h):
-                canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[h])
-            else:
-                if(monster_trace[old_x][old_y] == mp):
-                    canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[mp])
+                    if(monster_trace[old_x][old_y] == mp):
+                        canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[mp])
+                    else:
+                        canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
+            
+            for gem in gem_states[i]:
+                new_x, new_y = generate_coordinate_from_pos(gem)
+                obstacle_detector_flag = len(obstacle_detector([(new_x, new_y)], targets={h})) > 0 
+                if(obstacle_detector_flag and monster_trace[new_x][new_y] == h):
+                    canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[hg])
                 else:
-                    canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
-        
-        for gem in gem_states[i]:
-            new_x, new_y = generate_coordinate_from_pos(gem)
-            obstacle_detector_flag = len(obstacle_detector([(new_x, new_y)], targets={h})) > 0 
-            if(obstacle_detector_flag and monster_trace[new_x][new_y] == h):
-                canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[hg])
-            else:
-                canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[g])
+                    canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[g])
 
         root.after(1500, muovi_mostro_e_gemme, i + 1)
         
         # Aggiorna la posizione del mostro
         posizione_mostro[0], posizione_mostro[1] = x2, y2
     
-    muovi_mostro_e_gemme(1)
+    muovi_mostro_e_gemme(0)
 
 def bresenham(x1, y1, x2, y2):
     # Lista delle coordinate intermedie
@@ -238,20 +243,23 @@ def risolvi_labirinto():
     # Button cant't clicked
     button.config(state=tk.DISABLED)
 
-    # Reset del percorso del mostro 
+    # Reset del percorso del mostro e della sua posizione 
     for x in range(len(monster_trace)):
         for y in range(len(monster_trace[x])):
             if(labirinto[x][y] == g):
                 monster_trace[x][y] = " "
             else:
                 monster_trace[x][y] = labirinto[x][y]
+                if(labirinto[x][y] == mp):
+                    posizione_mostro[0] = x
+                    posizione_mostro[1] = y
 
     disegna_labirinto(canvas, labirinto)
 
     first_result = get_first_solution(prolog, first_strategy_goal)
     final_visited = extract_monster_position(first_result['FinalVisited'])
     Gemstates = extract_gemstates(first_result['FinalVisited'])
-    
+
     if first_result:
         aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], Gemstates[::-1])
         print("Soluzione trovata:", first_result['Cammino'])
