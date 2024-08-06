@@ -1,3 +1,8 @@
+
+:- use_module(library(uuid)).
+
+new_uuid(UUID) :- uuid(UUID).
+
 % Definizione del labirinto
 pos(wall, 0, 0).
 pos(hammer, 0, 1).
@@ -18,7 +23,7 @@ pos(empty, 1, 6).
 pos(empty, 1, 7).
 
 pos(empty, 2, 0).
-pos(portal, 2, 1).
+pos(empty, 2, 1).
 pos(empty, 2, 2).
 pos(empty, 2, 3).
 pos(empty, 2, 4).
@@ -65,7 +70,7 @@ pos(monster_position, 6, 7).
 pos(wall, 7, 0).
 pos(gem, 7, 1).
 pos(empty, 7, 2).
-pos(empty, 7, 3).
+pos(portal, 7, 3).
 pos(wall, 7, 4).
 pos(wall, 7, 5).
 pos(empty, 7, 6).
@@ -360,8 +365,9 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
     length(Visited, VLength),
     length([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent, Cost) | TailToVisit], TVLength),
     PosLength is VLength + TVLength,
+    new_uuid(UUID),
     %write('Length: '), write(PosLength), nl,
-    genera_transform(state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent, Cost), ActionsList, NewState, Visited, PosLength),
+    genera_transform(state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent, Cost), ActionsList, NewState, Visited, UUID),
     write('NewState: '), print(NewState), nl,
     difference(NewState, TailToVisit, StateToAdd),
     write('StateToAdd Difference: '), print(StateToAdd), nl,
@@ -386,12 +392,12 @@ genera_transform(_, [], [], _, _).
 
 genera_transform(state(HeadState, StateAction, HammerTaked, FreeCells, ParentName, P, PCost), [HeadAction | TailAction], [state([pos(monster_position, Row, Col)  | TransformedPositionGem], HeadAction, HammerTaked1, NewFreeCells, Length, ParentName, Cost) | Tail], Visited, Length):-
     init_transform(HeadAction, HeadState, Visited, [pos(monster_position, Row, Col) | TransformedPositionGem], HammerTaked, HammerTaked1, FreeCells, NewFreeCells),
-    NextLength is Length + 1,
+    new_uuid(UUID),
     pos(portal, R1, C1),
     manhattan_distance((Row, R1), (Col, C1), DCost),
     Cost is PCost + DCost,
     %write('Transform: '),  write(state([TransformedPositionMonster | TransformedPositionGem], HeadAction, HammerTaked1, NewFreeCells, Length, ParentName)), nl,
-    genera_transform(state(HeadState, StateAction, HammerTaked, FreeCells, ParentName, P, PCost), TailAction, Tail, Visited, NextLength ).
+    genera_transform(state(HeadState, StateAction, HammerTaked, FreeCells, ParentName, P, PCost), TailAction, Tail, Visited, UUID ).
 
 difference([], _, []).
 
