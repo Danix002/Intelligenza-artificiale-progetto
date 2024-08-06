@@ -3,14 +3,16 @@ from tkinter import font
 from PIL import Image, ImageTk
 from pyswip import Prolog
 
-first_strategy_path = "src/labirinto_first_strategy.pl"
+final_first_strategy_path = "src/final_strategy/labirinto_first_strategy.pl"
+base_first_strategy_path = "src/base_strategy/labirinto_first_strategy.pl"
 first_strategy_goal = "ricerca_iterative_deepening(Cammino, FinalVisited)"
-second_strategy_path = "src/labirinto_second_strategy.pl"
+final_second_strategy_path = "src/final_strategy/labirinto_second_strategy.pl"
+base_second_strategy_path = "src/base_strategy/labirinto_second_strategy.pl"
 second_strategy_goal = "ricerca_a_star(Cammino, FinalVisited)"
 
 # Inizializza la sessione di Prolog
 prolog = Prolog()
-prolog.consult(second_strategy_path)
+prolog.consult(final_second_strategy_path)
 
 w = "wall"
 h = "hammer"
