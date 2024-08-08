@@ -2,24 +2,45 @@ import tkinter as tk
 from tkinter import font
 from PIL import Image, ImageTk
 from pyswip import Prolog
+from initialization import create_interface
 
 final_strategy_path = "src/final_strategy/"
 base_strategy_path = "src/base_strategy/"
 final_first_strategy_path = "src/final_strategy/first_strategy.pl"
-base_first_strategy_path = "src/base_strategy/labirinto_first_strategy.pl"
+base_first_strategy_path = "src/base_strategy/first_strategy.pl"
 first_strategy_goal = "ricerca_iterative_deepening(Cammino, FinalVisited)"
 final_second_strategy_path = "src/final_strategy/second_strategy.pl"
 base_second_strategy_path = "src/base_strategy/second_strategy.pl"
 second_strategy_goal = "ricerca_a_star(Cammino, FinalVisited)"
 
+choice = create_interface()
+choice_goal = ""
+
 # Inizializza la sessione di Prolog
 prolog = Prolog()
-prolog.consult(final_strategy_path + "knowledge_little_size.pl")
-prolog.consult(final_strategy_path + "applicable.pl")
-prolog.consult(final_strategy_path + "det_position.pl")
-prolog.consult(final_strategy_path + "transform.pl")
-prolog.consult(final_strategy_path + "utility.pl")
-prolog.consult(final_second_strategy_path)
+
+if(choice == "Opzione 1" or choice == "Opzione 2"):
+    prolog.consult(base_strategy_path + "knowledge_little_size.pl")
+    if(choice == "Opzione 1"):
+        prolog.consult(base_first_strategy_path)
+        choice_goal = first_strategy_goal
+    else:
+        prolog.consult(base_second_strategy_path)
+        choice_goal = second_strategy_goal
+
+if(choice == "Opzione 3" or choice == "Opzione 4"):
+    prolog.consult(final_strategy_path + "knowledge_little_size.pl")
+    prolog.consult(final_strategy_path + "applicable.pl")
+    prolog.consult(final_strategy_path + "det_position.pl")
+    prolog.consult(final_strategy_path + "transform.pl")
+    prolog.consult(final_strategy_path + "utility.pl")
+    if(choice == "Opzione 3"):
+        prolog.consult(final_first_strategy_path)
+        choice_goal = first_strategy_goal
+    else:
+        prolog.consult(final_second_strategy_path)
+        choice_goal = second_strategy_goal
+
 prolog.assertz(":-[knowledge_little_size]")
 prolog.assertz("size(5, 6)")
 
@@ -60,23 +81,42 @@ immagini = {
 }
 
 # Configurazione del labirinto
-labirinto = [
-    [w, " ", g, " ", " ", " ", p],
-    [" ", " ", " ", " ", w, " ", " "],
-    [" ", " ", " ", " ", w, " ", " "],
-    [" ", " ", " ", " ", g, " ", " "],
-    [mp, " ", " ", w, " ", " ", " "],
-    [" ", " ", g, " ", w, w, " "]
-]
+if(choice == "Opzione 3" or choice == "Opzione 4"):
+    labirinto = [
+        [w, " ", g, " ", " ", " ", p],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", g, " ", " "],
+        [mp, " ", " ", w, " ", " ", " "],
+        [" ", " ", g, " ", w, w, " "]
+    ]
 
-monster_trace = [
-    [w, " ", " ", " ", " ", " ", p],
-    [" ", " ", " ", " ", w, " ", " "],
-    [" ", " ", " ", " ", w, " ", " "],
-    [" ", " ", " ", " ", " ", " ", " "],
-    [mp, " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", w, w, " "]
-]
+    monster_trace = [
+        [w, " ", " ", " ", " ", " ", p],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", " ", " ", " "],
+        [mp, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", w, w, " "]
+    ]
+elif(choice == "Opzione 1" or choice == "Opzione 2"):
+    labirinto = [
+        [w, " ", " ", " ", " ", " ", p],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", " ", " ", " "],
+        [mp, " ", " ", w, " ", " ", " "],
+        [" ", " ", " ", " ", w, w, " "]
+    ]
+
+    monster_trace = [
+        [w, " ", " ", " ", " ", " ", p],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", w, " ", " "],
+        [" ", " ", " ", " ", " ", " ", " "],
+        [mp, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", w, w, " "]
+    ]
 
 canvas_items = []
 
@@ -118,12 +158,13 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
         else:
             if i >= len(final_visited):
                 # Evidenziare il percorso del mostro
-                for gem in gem_states[i-1]:
-                    final_gem_x, final_gem_y = generate_coordinate_from_pos(gem)
-                    if(monster_trace[final_gem_x][final_gem_y] == mt):
-                        monster_trace[final_gem_x][final_gem_y] = pg
-                    else:
-                        monster_trace[final_gem_x][final_gem_y] = g
+                if(choice == "Opzione 3" or choice == "Opzione 4"):
+                    for gem in gem_states[i-1]:
+                        final_gem_x, final_gem_y = generate_coordinate_from_pos(gem)
+                        if(monster_trace[final_gem_x][final_gem_y] == mt):
+                            monster_trace[final_gem_x][final_gem_y] = pg
+                        else:
+                            monster_trace[final_gem_x][final_gem_y] = g
                 disegna_labirinto(canvas=canvas, labirinto=monster_trace)
                 button.config(state=tk.NORMAL)  
                 return
@@ -167,25 +208,25 @@ def aggiorna_labirinto(labirinto, direction, final_visited, gem_states):
                         canvas.itemconfig(canvas_items[x][y], image=immagini[" "])
                 monster_trace[x2][y2] = mp
                 canvas.itemconfig(canvas_items[x2][y2], image=immagini[mp])
-
-            for gem in gem_states[i-1]:
-                old_x, old_y = generate_coordinate_from_pos(gem)
-                obstacle_detector_flag = len(obstacle_detector([(old_x, old_y)], targets={h})) > 0 
-                if(obstacle_detector_flag and monster_trace[old_x][old_y] == h):
-                    canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[h])
-                else:
-                    if(monster_trace[old_x][old_y] == mp):
-                        canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[mp])
+            if(choice == "Opzione 3" or choice == "Opzione 4"):
+                for gem in gem_states[i-1]:
+                    old_x, old_y = generate_coordinate_from_pos(gem)
+                    obstacle_detector_flag = len(obstacle_detector([(old_x, old_y)], targets={h})) > 0 
+                    if(obstacle_detector_flag and monster_trace[old_x][old_y] == h):
+                        canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[h])
                     else:
-                        canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
-            
-            for gem in gem_states[i]:
-                new_x, new_y = generate_coordinate_from_pos(gem)
-                obstacle_detector_flag = len(obstacle_detector([(new_x, new_y)], targets={h})) > 0 
-                if(obstacle_detector_flag and monster_trace[new_x][new_y] == h):
-                    canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[hg])
-                else:
-                    canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[g])
+                        if(monster_trace[old_x][old_y] == mp):
+                            canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[mp])
+                        else:
+                            canvas.itemconfig(canvas_items[old_x][old_y], image=immagini[" "])
+                
+                for gem in gem_states[i]:
+                    new_x, new_y = generate_coordinate_from_pos(gem)
+                    obstacle_detector_flag = len(obstacle_detector([(new_x, new_y)], targets={h})) > 0 
+                    if(obstacle_detector_flag and monster_trace[new_x][new_y] == h):
+                        canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[hg])
+                    else:
+                        canvas.itemconfig(canvas_items[new_x][new_y], image=immagini[g])
 
         root.after(1500, muovi_mostro_e_gemme, i + 1)
         
@@ -238,7 +279,7 @@ def generate_coordinate_from_pos(position):
     y = position.split(',')[2][:-1]
     return int(x), int(y)
 
-def extract_gemstates(visited):
+def extract_gem_states(visited):
     gemstates = []
     for pos in visited:
         #add to gemstates elment from pos[1] to the end
@@ -263,9 +304,11 @@ def risolvi_labirinto():
 
     disegna_labirinto(canvas, labirinto)
 
-    first_result = get_first_solution(prolog, second_strategy_goal)
-    final_visited = extract_monster_position(first_result['FinalVisited'])
-    Gemstates = extract_gemstates(first_result['FinalVisited'])
+    first_result = get_first_solution(prolog, choice_goal)
+    final_visited = first_result['FinalVisited']
+    if(choice == "Opzione 3" or choice == "Opzione 4"):
+        final_visited = extract_monster_position(first_result['FinalVisited'])
+    Gemstates = extract_gem_states(first_result['FinalVisited'])
     
     if first_result:
         aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], Gemstates[::-1])

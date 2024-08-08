@@ -81,9 +81,6 @@ immagini = {
 }
 
 # Configurazione del labirinto
-labirinto = []
-monster_trace = []
-
 if(choice == "Opzione 3" or choice == "Opzione 4"):
     labirinto = [
         [w, h, " ", " ", " ", " ", " ", g],
@@ -288,7 +285,7 @@ def generate_coordinate_from_pos(position):
     y = position.split(',')[2][:-1]
     return int(x), int(y)
 
-def extract_gemstates(visited):
+def extract_gem_states(visited):
     gemstates = []
     for pos in visited:
         #add to gemstates elment from pos[1] to the end
@@ -318,7 +315,7 @@ def risolvi_labirinto():
     final_visited = first_result['FinalVisited']
     if(choice == "Opzione 3" or choice == "Opzione 4"):
         final_visited = extract_monster_position(first_result['FinalVisited'])
-    Gemstates = extract_gemstates(first_result['FinalVisited'])
+    Gemstates = extract_gem_states(first_result['FinalVisited'])
     
     if first_result:
         aggiorna_labirinto(labirinto, first_result['Cammino'], final_visited[::-1], Gemstates[::-1])
