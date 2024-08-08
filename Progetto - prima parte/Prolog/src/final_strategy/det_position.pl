@@ -1,7 +1,6 @@
 /**
  * Determinazione della posizione finale data la mossa
 **/
-:-[knowledge_example].
 
 det_position_nord(pos(monster_position, R, C), R1, _, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :- 
     pos(portal, R, C),

@@ -1,7 +1,7 @@
 /**
  * Determinazione dello stato successivo
 **/
-:-[knowledge_example].
+
 :-[det_position].
 
 transform(nord, [pos(T, R, C)| Tail], [ HP | TP], State, HammerTaked, HammerTaked1, FreeCells, FreeCellsTMP) :- 

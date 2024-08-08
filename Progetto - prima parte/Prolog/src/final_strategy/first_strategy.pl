@@ -1,4 +1,3 @@
-:-[knowledge_example].
 :-[applicable].
 :-[transform].
 :-[utility].

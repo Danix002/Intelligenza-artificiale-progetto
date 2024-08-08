@@ -8,7 +8,7 @@ base_strategy_path = "src/base_strategy/"
 final_first_strategy_path = "src/final_strategy/first_strategy.pl"
 base_first_strategy_path = "src/base_strategy/labirinto_first_strategy.pl"
 first_strategy_goal = "ricerca_iterative_deepening(Cammino, FinalVisited)"
-final_second_strategy_path = "src/final_strategy/labirinto_second_strategy.pl"
+final_second_strategy_path = "src/final_strategy/second_strategy.pl"
 base_second_strategy_path = "src/base_strategy/labirinto_second_strategy.pl"
 second_strategy_goal = "ricerca_a_star(Cammino, FinalVisited)"
 
@@ -19,7 +19,9 @@ prolog.consult(final_strategy_path + "applicable.pl")
 prolog.consult(final_strategy_path + "det_position.pl")
 prolog.consult(final_strategy_path + "transform.pl")
 prolog.consult(final_strategy_path + "utility.pl")
-prolog.consult(final_first_strategy_path)
+prolog.consult(final_second_strategy_path)
+prolog.assertz(":-[knowledge_big_size]")
+prolog.assertz("size(8, 8)")
 
 w = "wall"
 h = "hammer"
@@ -267,7 +269,7 @@ def risolvi_labirinto():
 
     disegna_labirinto(canvas, labirinto)
 
-    first_result = get_first_solution(prolog, first_strategy_goal)
+    first_result = get_first_solution(prolog, second_strategy_goal)
     final_visited = extract_monster_position(first_result['FinalVisited'])
     Gemstates = extract_gemstates(first_result['FinalVisited'])
     

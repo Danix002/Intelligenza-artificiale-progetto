@@ -1,6 +1,6 @@
 :- use_module(library(uuid)).
 new_uuid(UUID) :- uuid(UUID).
-:-[knowledge_example].
+
 :-[applicable].
 :-[transform].
 :-[utility].
