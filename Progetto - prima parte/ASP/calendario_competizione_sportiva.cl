@@ -1,29 +1,49 @@
-
-
-giornata(N, andata) :- N = 1..15.
-giornata(N, ritorno) :- N = 16..30.
-
-squadra(Juventus, Torino).
-squadra(Inter, Milano).
-squadra(Milan, Milano).
-squadra(Roma, Roma).
-squadra(Lazio, Roma).
-squadra(Napoli, Napoli).
-squadra(Fiorentina, Firenze).
-squadra(Bologna, Bologna).
-squadra(Udinese, Udine).
-squadra(Torino, Torino).
-squadra(Sampdoria, Genova).
-squadra(Genoa, Genova).
-squadra(Atalanta, Bergamo).
-squadra(Sassuolo, Sassuolo).
-squadra(Salernitana, Salerno).
-squadra(Cagliari, Cagliari).
-squadra(Verona, Verona).
-squadra(Empoli, Empoli).
-squadra(Palermo, Palermo).
-squadra(Parma, Parma).
-squadra(Lecce, Lecce).
+% Definizione delle squadre
+squadra(juventus, torino).
+squadra(milan, milano).
+squadra(inter, milano).
+squadra(roma, roma).
+squadra(lazio, roma).
+squadra(torino, torino).
+squadra(bologna, bologna).
+squadra(udinese, udine).
+squadra(napoli, napoli).
+squadra(genoa, genova).
+squadra(fiorentina, firenze).
+squadra(atalanta, bergamo).
+squadra(cagliari, cagliari).
+squadra(verona, verona).
+squadra(empoli, empoli).
+squadra(parma, parma).
 
 
 
+% Regola per generare le partite (scelta)
+{ partita(Squadra1, Squadra2, Giornata) } :-
+    squadra(Squadra1, _),
+    squadra(Squadra2, _),
+    Squadra1 != Squadra2,
+    giornata(Giornata).
+
+% Vincolo sul numero di partite per giornata
+% Assicurati che ci siano almeno 8 partite per ogni giornata e massimo 8
+%8 { partita(Squadra1, Squadra2, Giornata) : squadra(Squadra1, _), squadra(Squadra2, _), Squadra1 != Squadra2 } 8 :- giornata(Giornata).
+
+1 { partita(Squadra1, Squadra2, Giornata) :  squadra(Squadra2, _), Squadra1 != Squadra2 } 1 :- giornata(Giornata), squadra(Squadra1, _).
+1 { partita(Squadra1, Squadra2, Giornata) :  squadra(Squadra1, _), Squadra1 != Squadra2 } 1 :- giornata(Giornata), squadra(Squadra2, _).
+
+1 { partita(Squadra1, _, Giornata); partita(_, Squadra1, Giornata)} 1 :- giornata(Giornata), squadra(Squadra1, _).
+
+
+
+
+
+% Definizione delle giornate
+giornata(N) :- N = 1.
+
+
+%:- partita(Squadra, _, Giornata), partita(_, Squadra, Giornata).
+
+
+% Mostra le partite generate
+#show partita/3.
