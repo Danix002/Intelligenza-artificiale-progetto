@@ -30,9 +30,9 @@ squadra(parma, parma).
 %8 { partita(Squadra1, Squadra2, Giornata) : squadra(Squadra1, _), squadra(Squadra2, _), Squadra1 != Squadra2 } 8 :- giornata(Giornata).
 
 1 { partita(Squadra1, Squadra2, Giornata) :  squadra(Squadra2, _), Squadra1 != Squadra2 } 1 :- giornata(Giornata), squadra(Squadra1, _).
-1 { partita(Squadra1, Squadra2, Giornata) :  squadra(Squadra1, _), Squadra1 != Squadra2 } 1 :- giornata(Giornata), squadra(Squadra2, _).
+1 { partita(Squadra1, Squadra2, Giornata) :  squadra(Squadra1, _), Squadra1 != Squadra2 } 1 :- giornata(Giornata), squadra(_, Squadra2).
 
-1 { partita(Squadra1, _, Giornata); partita(_, Squadra1, Giornata)} 1 :- giornata(Giornata), squadra(Squadra1, _).
+% 1 { partita(Squadra1, _, Giornata); partita(_, Squadra1, Giornata)} 1 :- giornata(Giornata), squadra(Squadra1, _).
 
 
 
