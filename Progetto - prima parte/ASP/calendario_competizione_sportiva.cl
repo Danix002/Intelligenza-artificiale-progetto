@@ -16,7 +16,7 @@ squadra(verona, verona).
 squadra(empoli, empoli).
 squadra(parma, parma).
 
-giornata(1..30).
+giornata(1..23).
 
 
 % Regola per generare le partite (scelta)
@@ -40,9 +40,10 @@ giornata(1..30).
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata, Squadra3, SquadraTrasferta), SquadraCasa != Squadra3.
 :- partita(Giornata,SquadraCasa, _), partita(Giornata, _, SquadraCasa).
 :- partita(Giornata,SquadraCasa,SquadraTrasferta ), partita(Giornata2,SquadraCasa,SquadraTrasferta), Giornata != Giornata2.
-:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata < 15, Giornata2 < 15.
-:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata > 14, Giornata2 > 14.
-
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata < 10, Giornata2 < 10.
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata > 9, Giornata2 > 9.
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata+1, SquadraCasa, SquadraTrasferta2), partita(Giornata+2, SquadraCasa, SquadraTrasferta3).
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata+1, SquadraCasa2, SquadraTrasferta), partita(Giornata+2, SquadraCasa3, SquadraTrasferta).
 
 
 
