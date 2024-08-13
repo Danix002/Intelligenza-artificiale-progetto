@@ -16,14 +16,7 @@ squadra(verona, verona).
 squadra(empoli, empoli).
 squadra(parma, parma).
 
-giornata(1..23).
-
-% Regola per generare le partite (scelta)
-{ partita(Giornata, Squadra1, Squadra2) } :-
-    squadra(Squadra1, _),
-    squadra(Squadra2, _),
-    Squadra1 != Squadra2,
-    giornata(Giornata).
+giornata(1..30).
 
 % Vincolo sul numero di partite per giornata
 % Assicurati che ci siano esattamente 8 partite per ogni giornata
@@ -44,8 +37,8 @@ giornata(1..23).
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraCasa, SquadraTrasferta), Giornata != Giornata2.
 
 % Vincolo: divisione delle partite di andata (prime 15) e del ritorno (ultime 15)
-:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata < 10, Giornata2 < 10.
-:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata > 9, Giornata2 > 9.
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata < 16, Giornata2 < 16.
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata > 15, Giornata2 > 15.
 
 % Vincolo: la stessa squadra non deve giocare più di due partite consecutive in casa o in trasferta 
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata+1, SquadraCasa, SquadraTrasferta2), partita(Giornata+2, SquadraCasa, SquadraTrasferta3).
