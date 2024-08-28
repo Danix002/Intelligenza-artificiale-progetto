@@ -16,9 +16,16 @@ import customtkinter
 import clips
 
 env = clips.Environment()
-#env.load("player/control.clp")
-#env.load("player/cell.clp")
-env.load("player/guess_move.clp")
+
+
+env.load("player/control.clp")
+env.load("player/cell.clp")
+
+
+env.load("player/choose_move.clp")
+
+
+#env.load("player/guess_move.clp")
     
 env.reset()
 
@@ -97,7 +104,7 @@ class Othello(Board):
         '''
         if self.is_legal_move(self.move):
             #mossa legale
-            print("mossa legale", self.move)
+            #print("mossa legale", self.move)
             self.board[self.move[0]][self.move[1]] = self.current_player + 1
             self.num_tiles[self.current_player] += 1
             self.draw_tile(self.move, self.current_player)
@@ -247,7 +254,7 @@ class Othello(Board):
         diff = game_difficulty.facts()
         for d in diff:
             [difficulty] = [*d]
-            print(difficulty)  
+            #print(difficulty)  
         time = env.find_template("time")
         times=time.facts()
         
@@ -257,7 +264,7 @@ class Othello(Board):
        
         t.retract()
         time.assert_fact(step = s)
-        print("----------NEW STEP %d----------", s)
+        #print("----------NEW STEP %d----------", s)
         
         cell = env.find_template('cell')
         for i in range(len(self.board)):
@@ -269,20 +276,7 @@ class Othello(Board):
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('black'), type=clips.Symbol('empty'))
                 else:
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('white'), type=clips.Symbol('empty'))
-        cells = cell.facts()
-        for c in cells:
-             [step, row, col, nearCorner, content, type] = [*c]
-             if(int(step[1]) == int(s)-1):
-                print(step[1], row, col, nearCorner, content, type)
-            #inserisci tutti i campi
-            #print(step, row, col, nearCorner, content, type)          
-        
-#        times=time.facts()
-#        for t in times:
-#           [step] = [*t] #step
-#           break
-#        s=step[1]
-#        print(step)       
+        cells = cell.facts()      
 
 
     def play(self, x, y):
@@ -325,7 +319,7 @@ class Othello(Board):
             
             for t in times:
               [step] = [*t] #step
-              print(step)
+              #print(step)
               
               break
             s=step[1]
@@ -344,12 +338,6 @@ class Othello(Board):
                 i = 0
                 for m in moves:
                    [step, ro, co, cost] = [*m]
-                   if(int(co[1]) == 1 and int(ro[1]) == 1 ):
-                       print("Caccapupu")
-                       print("[", i, "] s ", step[1], "r ", ro[1], " c", co[1], " cost", cost[1])
-                   if(int(co[1]) == 0 and int(ro[1]) == 1 ):
-                       print("Caccasenza pupu")
-                       print("[", i, "] s ", step[1], "r ", ro[1], " c", co[1], " cost", cost[1])
                    i = i + 1
                    self.temp = bestMove(self.move, (int(ro[1]), int(co[1]), float(cost[1])))
                    if self.is_legal_move(self.temp):

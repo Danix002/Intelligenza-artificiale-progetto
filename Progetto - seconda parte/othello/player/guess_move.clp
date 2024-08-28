@@ -501,16 +501,6 @@
   (bind ?new-cost (+ ?a ?counter))
   (modify ?scfc (distance -1))
   (modify ?cl (nearCorner ?new-cost))
-  ;(printout t "update-cell-selected-cost: "
-            ;"step: " ?s
-            ;" | start cell: (row: " (fact-slot-value ?start_cell row) ", col: " (fact-slot-value ?start_cell col) ")"
-            ;" | destination cell: (row: " (fact-slot-value ?destination_cell row) ", col: " (fact-slot-value ?destination_cell col) ")"
-            ;" | current cell: (row: " ?r ", col: " ?c ")"
-            ;" | counter: " ?counter
-            ;" | direction: (row: " (fact-slot-value ?direction row) ", col: " (fact-slot-value ?direction col) ")"
-            ;" | old nearCorner: " ?a
-            ;" | new nearCorner: " ?new-cost
-            ;crlf)
 )
 
 (defrule guess-move 

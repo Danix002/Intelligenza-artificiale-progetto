@@ -1,10 +1,19 @@
-(defmodule CONTROL (export ?ALL))
 
 (deftemplate time
   (slot step)
 )
 
-(defrule str (declare (salience 10))
+(deftemplate game-difficulty
+  (slot difficulty (allowed-values easy hard vhard))
+)
+
+(deffacts initial-time
+   (time (step -1))
+)
+
+(defrule str 
+  (declare (salience 10))
 =>
   (set-strategy depth)
 )
+
