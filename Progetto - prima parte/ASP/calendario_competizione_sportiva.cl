@@ -16,15 +16,15 @@ squadra(verona, verona).
 squadra(empoli, empoli).
 squadra(parma, parma).
 
-giornata(1..30).
+giornata(1..13, andata).
+giornata(14..26, ritorno).
 
-% Vincolo sul numero di partite per giornata
-% Assicurati che ci siano esattamente 8 partite per ogni giornata
-8 { partita(Giornata, Squadra1, Squadra2) : 
+8 { 
+    partita(Giornata, Squadra1, Squadra2) : 
     squadra(Squadra1, _), 
     squadra(Squadra2, _), 
-    Squadra1 != Squadra2 
-} 8 :- giornata(Giornata).
+    Squadra1 != Squadra2
+} 8 :- giornata(Giornata, Tipo).
 
 % Vincolo: una squadra può partecipare a una sola partita per giornata
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata, SquadraCasa, SquadraTrasferta2), SquadraTrasferta != SquadraTrasferta2.
@@ -37,8 +37,8 @@ giornata(1..30).
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraCasa, SquadraTrasferta), Giornata != Giornata2.
 
 % Vincolo: divisione delle partite di andata (prime 15) e del ritorno (ultime 15)
-:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata < 16, Giornata2 < 16.
-:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), Giornata > 15, Giornata2 > 15.
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), giornata(Giornata, andata), giornata(Giornata2, andata).
+:- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), giornata(Giornata, ritorno), giornata(Giornata2, ritorno).
 
 % Vincolo: la stessa squadra non deve giocare più di due partite consecutive in casa o in trasferta 
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata+1, SquadraCasa, SquadraTrasferta2), partita(Giornata+2, SquadraCasa, SquadraTrasferta3).
