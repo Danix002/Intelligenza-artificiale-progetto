@@ -1,6 +1,3 @@
-
-
-
 /** template
     start cell
     destination cell
@@ -16,9 +13,6 @@
               )
     distance    
 **/
-
-
-
 
 // rule init-template
         ->
@@ -38,7 +32,6 @@
         template.count + 1
         template.distance - 1
 
-
 // rule
     // PRE COND:
         template con distance != 0
@@ -46,7 +39,6 @@
         checkCell.type != F
     // DO:
         template.distance - 1
-
 
 // rule
     // PRE COND:

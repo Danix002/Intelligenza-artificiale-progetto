@@ -1,4 +1,4 @@
-;(defmodule CELL ( export ?ALL ) (import CONTROL deftemplate ?ALL) )
+;(defmodule CELL ( export ?ALL ) (import CONTROL deftemplate ?ALL))
 
 (deftemplate cell-direction
     (slot row)

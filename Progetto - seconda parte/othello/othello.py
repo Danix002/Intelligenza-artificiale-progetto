@@ -12,20 +12,13 @@ from tkinter import ttk
 from board import Board
 from PIL import Image, ImageTk
 import customtkinter
-
 import clips
 
 env = clips.Environment()
 
-
 env.load("player/control.clp")
 env.load("player/cell.clp")
-
-
 env.load("player/choose_move.clp")
-
-
-#env.load("player/guess_move.clp")
     
 env.reset()
 
