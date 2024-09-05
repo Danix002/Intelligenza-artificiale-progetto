@@ -95,8 +95,8 @@ def ordinaGiornate():
         count += 1
 
 # Command to run clingo and save output to calendario.json
-# clingo_command_linux = "LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu clingo -t 7 --outf=2 calendario_competizione_sportiva.cl > calendario.json"
-clingo_command = "clingo -t 4 --outf=2 calendario_competizione_sportiva.cl > calendario.json"
+#clingo_command_linux = "LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu clingo -t 7 --outf=2 calendario_competizione_sportiva.cl > calendario.json"
+clingo_command = "clingo -t 7 --outf=2 calendario_competizione_sportiva.cl > calendario.json"
 # Execute clingo command
 run_clingo(clingo_command)
 
