@@ -7,3 +7,4 @@ pip install -r requirements.txt
 ```
 
 A questo punto, l'ambiente è pronto per eseguire il labirinto.
+Per questo progetto è stata utilizzata la libreria [pyswip](https://github.com/yuce/pyswip).
