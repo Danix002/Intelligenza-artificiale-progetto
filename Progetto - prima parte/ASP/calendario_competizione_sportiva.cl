@@ -27,7 +27,6 @@ giornata(15..28, ritorno).
     Squadra1 != Squadra2
 } 8 :- giornata(Giornata, _).
 
-
 % Vincolo: una squadra può partecipare a una sola partita per giornata
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata, SquadraCasa, SquadraTrasferta2), SquadraTrasferta != SquadraTrasferta2.
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata, SquadraCasa2, SquadraTrasferta), SquadraCasa != SquadraCasa2.

@@ -21,7 +21,7 @@ choice_goal = ""
 prolog = Prolog()
 
 if(choice == "Opzione 1" or choice == "Opzione 2"):
-    prolog.consult(base_strategy_path + "knowledge_little_size.pl")
+    prolog.consult(base_strategy_path + "knowledge_little_size_more_walls.pl")
     if(choice == "Opzione 1"):
         prolog.consult(base_first_strategy_path)
         choice_goal = first_strategy_goal
@@ -30,7 +30,7 @@ if(choice == "Opzione 1" or choice == "Opzione 2"):
         choice_goal = second_strategy_goal
 
 if(choice == "Opzione 3" or choice == "Opzione 4"):
-    prolog.consult(final_strategy_path + "knowledge_little_size.pl")
+    prolog.consult(final_strategy_path + "knowledge_little_size_more_walls.pl")
     prolog.consult(final_strategy_path + "applicable.pl")
     prolog.consult(final_strategy_path + "det_position.pl")
     prolog.consult(final_strategy_path + "transform.pl")
@@ -42,8 +42,8 @@ if(choice == "Opzione 3" or choice == "Opzione 4"):
         prolog.consult(final_second_strategy_path)
         choice_goal = second_strategy_goal
 
-prolog.assertz(":-[knowledge_little_size]")
-prolog.assertz("size(6, 7)")
+prolog.assertz(":-[knowledge_little_size_more_walls]")
+prolog.assertz("size(5, 6)")
 
 w = "wall"
 h = "hammer"
@@ -88,8 +88,8 @@ if(choice == "Opzione 3" or choice == "Opzione 4"):
         [" ", " ", " ", " ", w, " ", " "],
         [" ", " ", " ", " ", w, " ", " "],
         [" ", " ", " ", " ", g, " ", " "],
-        [mp, " ", " ", w, " ", " ", " "],
-        [" ", " ", g, " ", w, w, " "]
+        [mp, " ", h, w, " ", " ", dw],
+        [" ", " ", g, " ", w, w, p]
     ]
 
     monster_trace = [
@@ -98,7 +98,7 @@ if(choice == "Opzione 3" or choice == "Opzione 4"):
         [" ", " ", " ", " ", w, " ", " "],
         [" ", " ", " ", " ", " ", " ", " "],
         [mp, " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", w, w, " "]
+        [" ", " ", " ", " ", w, w, p]
     ]
 elif(choice == "Opzione 1" or choice == "Opzione 2"):
     labirinto = [
@@ -107,7 +107,7 @@ elif(choice == "Opzione 1" or choice == "Opzione 2"):
         [" ", " ", " ", " ", w, " ", " "],
         [" ", " ", " ", " ", " ", " ", " "],
         [mp, " ", " ", w, " ", " ", " "],
-        [" ", " ", " ", " ", w, w, " "]
+        [" ", " ", " ", " ", w, w, p]
     ]
 
     monster_trace = [
@@ -116,7 +116,7 @@ elif(choice == "Opzione 1" or choice == "Opzione 2"):
         [" ", " ", " ", " ", w, " ", " "],
         [" ", " ", " ", " ", " ", " ", " "],
         [mp, " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", w, w, " "]
+        [" ", " ", " ", " ", w, w, p]
     ]
 
 canvas_items = []

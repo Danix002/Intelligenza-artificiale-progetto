@@ -45,7 +45,7 @@ pos(empty, 5, 2).
 pos(empty, 5, 3).
 pos(wall, 5, 4).
 pos(wall, 5, 5).
-pos(empty, 5, 6).
+pos(portal, 5, 6).
 
 azione(nord).
 azione(sud).

@@ -11,7 +11,7 @@ pos(empty, 1, 0).
 pos(empty, 1, 1).
 pos(empty, 1, 2).
 pos(empty, 1, 3).
-pos(wall, 1, 4).
+pos(empty, 1, 4).
 pos(empty, 1, 5).
 pos(empty, 1, 6).
 
@@ -19,7 +19,7 @@ pos(empty, 2, 0).
 pos(empty, 2, 1).
 pos(empty, 2, 2).
 pos(empty, 2, 3).
-pos(wall, 2, 4).
+pos(empty, 2, 4).
 pos(empty, 2, 5).
 pos(empty, 2, 6).
 
@@ -43,9 +43,9 @@ pos(empty, 5, 0).
 pos(empty, 5, 1).
 pos(gem, 5, 2).
 pos(empty, 5, 3).
-pos(wall, 5, 4).
+pos(empty, 5, 4).
 pos(wall, 5, 5).
-pos(empty, 5, 6).
+pos(portal, 5, 6).
 
 azione(nord).
 azione(sud).

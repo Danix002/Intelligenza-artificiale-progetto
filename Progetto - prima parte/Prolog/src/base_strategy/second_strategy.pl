@@ -75,7 +75,7 @@ ricerca_a_star(Cammino, FinalVisited):-
     manhattan_distance((R, R1), (C, C1), Cost),
     ampiezza_search([state(pos(monster_position, R, C), nothing, 0, -1, Cost)], [], Cammino, FinalVisitedPosition),
     extract_state_from_visited(FinalVisitedPosition, FinalVisited),
-    nl, nl, write('walk: '), print(Cammino), nl, nl.
+    nl, write('walk: '), print(Cammino), nl, nl.
 
 extract_state_from_visited([], []).     
 
