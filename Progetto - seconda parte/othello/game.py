@@ -11,5 +11,4 @@ def main():
     game = othello.Othello()
     game.draw_difficulty_banner()
 
-
 main()

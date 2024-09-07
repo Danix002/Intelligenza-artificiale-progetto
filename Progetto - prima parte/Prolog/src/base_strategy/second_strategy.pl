@@ -104,16 +104,11 @@ ampiezza_search([state(pos(monster_position, MonsterRow, MonsterCol), StateActio
         applicable(Az, pos(monster_position, MonsterRow, MonsterCol)),
         ActionsList
     ),
-    %write(ActionsList), nl,
     new_uuid(UUID),
-    %write('Before genera: '), write(pos(monster_position, MonsterRow, MonsterCol)), nl,
     genera_transform(state(pos(monster_position, MonsterRow, MonsterCol), StateAction, Name, Parent, Cost), ActionsList, NewState, Visited, UUID),
-    %write('NewState: '), print(NewState), nl,
     difference(NewState, TailToVisit, StateToAdd),
-    %write('StateToAdd difference: '), print(StateToAdd), nl,
     append(TailToVisit, StateToAdd, NewTailToVisit),
     sort_by_euristic(NewTailToVisit, NewTailToVisitSorted),
-    %write('sort euristic:'), write(NewTailToVisitSorted),
     ampiezza_search(NewTailToVisitSorted, [visited(pos(monster_position, MonsterRow, MonsterCol), Name, Parent, StateAction) | Visited], Cammino, FinalVisited).
 
 % Predicato che consente di effettuare la ricerca in ampiezza. I parametri sono:
@@ -122,7 +117,6 @@ ampiezza_search([state(pos(monster_position, MonsterRow, MonsterCol), StateActio
 % Questo predicato riguarda il caso in cui lo stato corrente è già presente nella lista dei visitati, pertanto non lo consideriamo.
 ampiezza_search([state(pos(monster_position, R, C), _, Name, Parent, _) | TailToVisit], Visited, Cammino, FinalVisited):- 
     \+ check_visited(_, visited(pos(monster_position, R, C), Name, Parent), Visited),
-    %print('Salto: '), print(pos(monster_position, R, C)), nl,
     ampiezza_search(TailToVisit, Visited, Cammino, FinalVisited).
 
 genera_transform(_, [], [], _, _).
@@ -131,7 +125,6 @@ genera_transform(_, [], [], _, _).
 % Al primo stato successore viene assegnato un identificativo univoco, in modo da poterlo distinguere dagli altri stati. 
 % Gli stati successori generati a partire dallo stato corrente
 genera_transform(state(pos(monster_position, MonsterRow, MonsterCol), StateAction, ParentName, P, PCost), [HeadAction | TailAction], [state(pos(monster_position, Row, Col), HeadAction, Length, ParentName, Cost) | Tail], Visited, Length):-
-    %write('inside genera: '), write(pos(monster_position, MonsterRow, MonsterCol)), nl,
     transform(HeadAction, pos(monster_position, MonsterRow, MonsterCol), pos(monster_position, Row, Col)),
     new_uuid(UUID),
     pos(portal, R1, C1),

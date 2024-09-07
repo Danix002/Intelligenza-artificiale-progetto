@@ -26,12 +26,7 @@ ricerca_a_star(Cammino, FinalVisited):-
     ampiezza_search([state([pos(monster_position, R, C) | Lpos], nothing, HammerTaked, [], 0, -1, Cost)], [], _, Cammino, FinalVisitedPosition, _),
     extract_state_from_visited(FinalVisitedPosition, FinalVisited),
     nl, nl, write('walk: '), print(Cammino), nl, nl.
-    %write('gem states: '), print(GemStates), nl,
-    %write('position visited by monster PRE: '), write(FinalVisitedPosition), nl,
-    %write('position visited by monster: '), write(FinalVisited), nl,
-    %write('hammer taked: '), print(HammerTaked1), nl,
-    %write('free cells: '), print(FreeCellsFinal), nl.
-
+   
 extract_state_from_visited([], []).  
 
 extract_state_from_visited([visited(State, _, _, _) | Tail], [State | TailState]):-
@@ -55,9 +50,6 @@ ampiezza_search([state([pos(monster_position, R, C) | GS], StateAction, HammerTa
 % - FreeCellsFinal: lista delle celle libere nello stato finale
 % Questo predicato riguarda il caso in cui lo stato corrente non è presente nella lista dei visitati.
 ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent, Cost) | TailToVisit], Visited, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal):-
-    %write('monster: '), print(pos(monster_position, MonsterRow, MonsterCol)), nl,
-    %write('Visited: '), write(Visited), nl,
-    %write('To Visit: '), write(TailToVisit), nl, 
     check_visited(_, visited([pos(monster_position, MonsterRow, MonsterCol) | GemState], Name, Parent, StateAction ), Visited),
     findall(
         Az,
@@ -70,23 +62,11 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
         ),
         ActionsList
     ),
-    %write('GemState: '), print(GemState), nl,
-    %write('Actions: '), print(ActionsList), nl,
-    %length(Visited, VLength),
-    %length([state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent, Cost) | TailToVisit], TVLength),
-    %PosLength is VLength + TVLength,
     new_uuid(UUID),
-    %write('Length: '), write(PosLength), nl,
     genera_transform(state([pos(monster_position, MonsterRow, MonsterCol) | GemState], StateAction, HammerTaked, FreeCells, Name, Parent, Cost), ActionsList, NewState, Visited, UUID),
-    %write('NewState: '), print(NewState), nl,
     difference(NewState, TailToVisit, StateToAdd),
-    %write('StateToAdd Difference: '), print(StateToAdd), nl,
     append(TailToVisit, StateToAdd, NewTailToVisit),
-    %write('NewTailToVisitWithCost: '), print(NewTailToVisitWithCost), nl,
     sort_by_euristic(NewTailToVisit, NewTailToVisitSorted),
-    %write('NewTailToVisitSorted: '), print(NewTailToVisitSorted), nl, nl, nl,
-    %print('NewTailToVisitSorted: '), print(NewTailToVisitSorted), nl, nl, nl,
-    %write('NewTailToVisitSorted After sort: '), print(NewTailToVisitSorted), nl, nl, nl,
     sort_by_column(GemState, SortTransformedPositionGemColumn),
     sort_by_row(SortTransformedPositionGemColumn, SortTransformedPositionGem),
     ampiezza_search(NewTailToVisitSorted, [ visited([pos(monster_position, MonsterRow, MonsterCol) | SortTransformedPositionGem], Name, Parent, StateAction ) | Visited], HammerTaked1, Cammino, FinalVisited, FreeCellsFinal).
@@ -97,7 +77,6 @@ ampiezza_search([state([pos(monster_position, MonsterRow, MonsterCol) | GemState
 % Questo predicato riguarda il caso in cui lo stato corrente è già presente nella lista dei visitati, pertanto non lo consideriamo.
 ampiezza_search([state([pos(monster_position, R, C) | GS], _, _, _, Name, Parent, _) | TailToVisit], Visited, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal):- 
     \+ check_visited(_, visited([pos(monster_position, R, C) | GS], Name, Parent), Visited),
-    %print('Salto: '), print(pos(monster_position, R, C)), nl,
     ampiezza_search(TailToVisit, Visited, HammerTaked1, Cammino, FinalVisited, FreeCellsFinal).
 
 extract_first_element([Head | _], Head).
@@ -116,7 +95,6 @@ genera_transform(state(HeadState, StateAction, HammerTaked, FreeCells, ParentNam
     pos(portal, R1, C1),
     manhattan_distance((Row, R1), (Col, C1), DCost),
     Cost is PCost + DCost,
-    %write('Transform: '),  write(state([TransformedPositionMonster | TransformedPositionGem], HeadAction, HammerTaked1, NewFreeCells, Length, ParentName)), nl,
     genera_transform(state(HeadState, StateAction, HammerTaked, FreeCells, ParentName, P, PCost), TailAction, Tail, Visited, UUID ).
 
 difference([], _, []).
@@ -144,7 +122,6 @@ difference([S | Tail], B, [S | RisTail]):-
 init_transform(nord, [pos(monster_position, R, C)| Tail], _, Result, HammerTaked, HammerTaked1, FreeCells, NewFreeCells) :-     
     sort_by_row([pos(monster_position, R, C)| Tail], State),
     transform(nord, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
-    %write('nord'), write(NewHammerTaked), nl
     move_monster_position_to_front(ResultTMP, Result),!.
 
 % Predicato che consente di trasformare la posizione corrente, spostando il mostro verso sud.
@@ -163,9 +140,7 @@ init_transform(nord, [pos(monster_position, R, C)| Tail], _, Result, HammerTaked
 init_transform(sud, [pos(monster_position, R, C)| Tail], _, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_row([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),
-    %write('sud'), nl,
     transform(sud, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1, FreeCells, NewFreeCells),
-    %write('sud'), write(NewHammerTaked), nl
     move_monster_position_to_front(ResultTMP, Result),!.
 
 % Predicato che consente di trasformare la posizione corrente, spostando il mostro verso ovest.
@@ -183,9 +158,7 @@ init_transform(sud, [pos(monster_position, R, C)| Tail], _, Result, HammerTaked,
 % utilizziamo il cut per avere la  mutua esclusione tra le regole e migliorare le prestazioni
 init_transform(ovest, [pos(monster_position, R, C)| Tail], _, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
-    %write('ovest'), nl,
     transform(ovest, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
-    %write('ovest'), write(NewHammerTaked),
     move_monster_position_to_front(ResultTMP, Result), !.
 
 % Predicato che consente di trasformare la posizione corrente, spostando il mostro verso est.
@@ -204,22 +177,15 @@ init_transform(ovest, [pos(monster_position, R, C)| Tail], _, Result, HammerTake
 init_transform(est, [pos(monster_position, R, C)| Tail], _, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),  
-    %write('est'), nl,
     transform(est, ReverseState, ResultTMP, [pos(monster_position, R, C) | Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
-    %write('est'), write(NewHammerTaked),
     move_monster_position_to_front(ResultTMP, Result), !.
 
 init_transform(est, [pos(monster_position, _, _)| _], _, _, _, _,  _, _).
 
 check_visited(_, visited([pos(monster_position, R, C) | GemState], _, _, _), Visited) :- 
-    %write('Checking '), write(Az), nl,
-    %write('visited: '), write(Visited), nl,
-    %print([pos(monster_position, R, C) | GemState]), nl,
-    %write('New position: '), write(pos(monster_position, R, C)), write('__'),
     sort_by_column(GemState, SortTransformedPositionGemColumn),
     sort_by_row(SortTransformedPositionGemColumn, SortTransformedPositionGem),
     \+ member(visited([pos(monster_position, R, C) | SortTransformedPositionGem],  _, _, _ ), Visited).
-    %write(Az), write(' is valid'), nl.
 
 extract_state_values([], []).
 

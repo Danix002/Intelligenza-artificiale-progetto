@@ -22,7 +22,6 @@ env.load("player/choose_move.clp")
     
 env.reset()
 
-
 # Define all the possible directions in which a player's move can flip 
 # their adversary's tiles as constant (0 – the current row/column, 
 # +1 – the next row/column, -1 – the previous row/column)
@@ -81,10 +80,6 @@ class Othello(Board):
             self.board[row][col] = color + 1
             self.draw_tile(initial_squares[i], color)
         
-
-
-        
-    
     def make_move(self):
         ''' Method: make_move
             Parameters: self
@@ -103,7 +98,6 @@ class Othello(Board):
             self.draw_tile(self.move, self.current_player)
             self.flip_tiles()
             
-    
     def flip_tiles(self):
         ''' Method: flip_tiles
             Parameters: self
@@ -238,8 +232,6 @@ class Othello(Board):
             turtle.onscreenclick(self.play)
             turtle.mainloop()
   
-        
-            
     def reviseClipsBoard(self):
         #env.reset()
         game_difficulty = env.find_template('game-difficulty')
@@ -271,7 +263,6 @@ class Othello(Board):
                     cell.assert_fact(step=s, row = i, col =j, nearCorner=1, content=clips.Symbol('white'), type=clips.Symbol('empty'))
         cells = cell.facts()      
 
-
     def play(self, x, y):
         ''' Method: play
             Parameters: self, x (float), y (float)
@@ -298,7 +289,6 @@ class Othello(Board):
                 self.make_move()
             else:
                 return
-
 
         def bestMove(move_1, move_2):
             if move_1[2] <= move_2[2]:
@@ -346,9 +336,6 @@ class Othello(Board):
                     #print("c'è una mossa")
                     turtle.onscreenclick(None)
                     self.make_move()
-		        
-                
-                
                 
                 self.current_player = 0
                 if self.has_legal_move(): 
@@ -425,8 +412,6 @@ class Othello(Board):
 
         return printable_str
 
-
-
     def __eq__(self, other):
         '''
             Compares two instances. 
@@ -449,7 +434,6 @@ class Othello(Board):
         self.root.title("Choose Difficulty Level")
         self.root.geometry("400x400")
 
-  
         #set text color orange
         label = customtkinter.CTkLabel(self.root, text="Select Difficulty",  font=("Helvetica", 24))
         label.pack(pady=40)
@@ -521,7 +505,6 @@ class Othello(Board):
         self.root.destroy()
         self.difficulty = self.difficulty.get()
         print(f"Selected Difficulty: {self.difficulty}")
-        
         
         self.draw_board()
         self.initialize_board()

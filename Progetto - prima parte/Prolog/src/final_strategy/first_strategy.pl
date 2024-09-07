@@ -12,9 +12,6 @@ ricerca_iterative_deepening(Cammino, FinalVisited):-
     findall(pos(gem, RG, CG), pos(gem, RG, CG), Lpos),
     has_hammer(HammerTaked),
     iterative_deepening_search(1, [[pos(monster_position, R, C) | Lpos]], pos(monster_position, R, C), Lpos, HammerTaked, _, Cammino, FinalVisited, _),
-    %write('position visited by monster: '), print(FinalVisited), nl,
-    %write('hammer taked: '), print(HammerTaked1), nl,
-    %write('free cells: '), print(FreeCellsFinal), nl,
     write('walk: '), print(Cammino), nl.
 
 
@@ -91,7 +88,6 @@ profondity_search(Limit, pos(monster_position, MonsterRow, MonsterCol), GemState
 init_transform(nord, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1, FreeCells, NewFreeCells) :-     
     sort_by_row([pos(monster_position, R, C)| Tail], State),
     transform(nord, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
-    %write('nord'), write(NewHammerTaked), nl
     move_monster_position_to_front(ResultTMP, Result),
     check_visited(nord, Result, Visited), !.
 
@@ -108,7 +104,6 @@ init_transform(sud, [pos(monster_position, R, C)| Tail], Visited, Result, Hammer
     sort_by_row([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),
     transform(sud, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
-    %write('sud'), write(NewHammerTaked), nl
     move_monster_position_to_front(ResultTMP, Result),
     check_visited(sud, Result, Visited), !.
 
@@ -122,7 +117,6 @@ init_transform(sud, [pos(monster_position, R, C)| Tail], Visited, Result, Hammer
 init_transform(ovest, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
     transform(ovest, State, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
-    %write('ovest'), write(NewHammerTaked),
     move_monster_position_to_front(ResultTMP, Result),
     check_visited(ovest, Result, Visited), !.
 
@@ -136,19 +130,12 @@ init_transform(ovest, [pos(monster_position, R, C)| Tail], Visited, Result, Hamm
 init_transform(est, [pos(monster_position, R, C)| Tail], Visited, Result, HammerTaked, HammerTaked1,  FreeCells, NewFreeCells) :- 
     sort_by_column([pos(monster_position, R, C)| Tail], State),
     reverse(State, ReverseState),  
-    %write('est'), nl,
     transform(est, ReverseState, ResultTMP, [pos(monster_position, R, C)| Tail], HammerTaked, HammerTaked1,  FreeCells, NewFreeCells),
-    %write('est'), write(NewHammerTaked),
     move_monster_position_to_front(ResultTMP, Result),
     check_visited(est, Result, Visited), !.
 
 % Predicato che consente di verificare se la lista contenente la posizione corrente del mostriciattolo e delle gemme è già stata visitata (presente in Visited).
 check_visited(_, [pos(monster_position, R, C) | GenState], Visited) :- 
-    %write('Checking '), write(Az), nl,
-    %write('visited: '), write(Visited), nl,
-    %print([pos(monster_position, R, C) | GemState]), nl,
-    %write('New position: '), write(pos(monster_position, R, C)), write('__'),
     sort_by_column(GenState, SortTransformedPositionGemColumn ),
     sort_by_column(SortTransformedPositionGemColumn, SortTransformedPositionGem ),
     \+ member([pos(monster_position, R, C) | SortTransformedPositionGem], Visited).
-    %write(Az), write(' is valid'), nl.

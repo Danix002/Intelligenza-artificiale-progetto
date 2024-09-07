@@ -1,4 +1,4 @@
-% Definizione del labirinto little size
+% Definizione del labirinto little size more walls
 pos(wall, 0, 0).
 pos(empty, 0, 1).
 pos(empty, 0, 2).

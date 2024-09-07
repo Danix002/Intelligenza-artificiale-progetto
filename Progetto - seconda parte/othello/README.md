@@ -15,7 +15,6 @@ The game is played with black-and-white tiles on an 8x8 board. The object of the
 - Play continues, with the players taking turns until the whole board is covered or there are no more legal moves.
 - When the board is completely covered in tiles, or there are no more legal moves, then the game is over. Whichever player has more tiles of their color on the board wins. The program will announce the winner and how many tiles they have on the board. Ties can happen, too.
 
-
 **Legal moves**: for a move to be legal, a tile must be placed such that at least one opposing tile will be flipped.
 
 ## File structure
