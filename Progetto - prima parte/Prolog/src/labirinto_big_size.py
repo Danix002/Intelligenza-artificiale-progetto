@@ -3,6 +3,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 from pyswip import Prolog
 from initialization import create_interface
+import time
 
 final_strategy_path = "src/final_strategy/"
 base_strategy_path = "src/base_strategy/"
@@ -42,7 +43,7 @@ if(choice == "Opzione 3" or choice == "Opzione 4"):
         choice_goal = second_strategy_goal
 
 prolog.assertz(":-[knowledge_big_size]")
-prolog.assertz("size(8, 8)")
+prolog.assertz("size(11, 11)")
 
 w = "wall"
 h = "hammer"
@@ -80,55 +81,67 @@ immagini = {
     pg: carica_immagine("src/img/path-gem.png")
 }
 
-# Configurazione del labirinto
 if(choice == "Opzione 3" or choice == "Opzione 4"):
     labirinto = [
-        [w, " ", " ", " ", " ", " ", " ", g, " "],
-        [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", p, " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", dw, dw, dw, w],
-        [" ", " ", " ", " ", g, dw, h, " ", " "],
-        [" ", " ", " ", " ", " ", dw, " ", " ", " "],
-        [" ", " ", " ", " ", " ", dw, " ", mp, " "],
-        [" ", g, " ", " ", " ", dw, " ", " ", " "],
-        [" ", " ", " ", " ", g, dw, " ", h, " "]
+        [w, " ", " ", " ", " ", " ", " ", g, " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", p, " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", dw, dw, dw, w, dw, " ", " "],
+        [" ", " ", " ", " ", g, dw, h, " ", " ", dw, " ", " "],
+        [" ", " ", " ", " ", " ", dw, " ", " ", w, " ", " ", " "],
+        [" ", " ", " ", " ", " ", dw, " ", mp, " ", dw, " ", " "],
+        [" ", g, " ", " ", " ", dw, " ", " ", dw, " ", " ", " "],
+        [" ", " ", " ", " ", g, dw, " ", h, " ", w, " ", " "],
+        [" ", " ", " ", " ", " ", w, w, dw, w, w, " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
     ]
 
     monster_trace = [
-        [w, " ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", p, " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", dw, dw, dw, w],
-        [" ", " ", " ", " ", " ", dw, h, " ", " "],
-        [" ", " ", " ", " ", " ", dw, " ", " ", " "],
-        [" ", " ", " ", " ", " ", dw, " ", mp, " "],
-        [" ", " ", " ", " ", " ", dw, " ", " ", " "],
-        [" ", " ", " ", " ", " ", dw, " ", h, " "]
+        [w, " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", p, " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", dw, dw, dw, w, dw, " ", " "],
+        [" ", " ", " ", " ", " ", dw, h, " ", " ", dw, " ", " "],
+        [" ", " ", " ", " ", " ", dw, " ", " ", w, " ", " ", " "],
+        [" ", " ", " ", " ", " ", dw, " ", mp, " ", dw, " ", " "],
+        [" ", " ", " ", " ", " ", dw, " ", " ", dw, " ", " ", " "],
+        [" ", " ", " ", " ", " ", dw, " ", h, " ", w, " ", " "],
+        [" ", " ", " ", " ", " ", w, w, dw, w, w, " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
     ]
 elif(choice == "Opzione 1" or choice == "Opzione 2"):
     labirinto = [
-        [w, " ", " ", " ", " ", " ", " ", " ", p],
-        [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", p, " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", w, w, w],
-        [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", w, " ", " ", " "],
-        [" ", " ", " ", " ", " ", w, " ", mp, " "],
-        [" ", " ", " ", " ", " ", w, " ", " ", " "],
-        [" ", " ", " ", " ", p, w, " ", " ", " "]
+        [w, " ", " ", " ", " ", " ", " ", " ", p, " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", p, " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, w, w, w, w, w, " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", mp, " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", p, w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "]
     ]
 
     monster_trace = [
-        [w, " ", " ", " ", " ", " ", " ", " ", p],
-        [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", p, " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", w, w, w],
-        [" ", " ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", w, " ", " ", " "],
-        [" ", " ", " ", " ", " ", w, " ", mp, " "],
-        [" ", " ", " ", " ", " ", w, " ", " ", " "],
-        [" ", " ", " ", " ", p, w, " ", " ", " "]
+        [w, " ", " ", " ", " ", " ", " ", " ", p, " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", p, " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, w, w, w, w, w, " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", mp, " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", p, w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", " ", " ", w, " ", " ", " ", " ", " ", " "]
     ]
+
 
 canvas_items = []
 
@@ -316,8 +329,14 @@ def risolvi_labirinto():
                     posizione_mostro[1] = y
 
     disegna_labirinto(canvas, labirinto)
-
+    
+    start_time = time.time()
     first_result = get_first_solution(prolog, choice_goal)
+    end_time = time.time()
+    #round to 2 decimal places
+    execution_time = round(end_time - start_time, 2)
+  
+    
     final_visited = first_result['FinalVisited']
     if(choice == "Opzione 3" or choice == "Opzione 4"):
         final_visited = extract_monster_position(first_result['FinalVisited'])
@@ -330,9 +349,10 @@ def risolvi_labirinto():
         print("Nessuna soluzione trovata")
         # Button can be clicked
         button.config(state=tk.NORMAL)
+    print("Execution time: ", execution_time, " seconds")
 
 # Configurazione del canvas
-canvas = tk.Canvas(root, width=715, height=715)  # Dimensione del canvas aumentata
+canvas = tk.Canvas(root, width=960, height=960)  # Dimensione del canvas aumentata
 canvas.pack()
 
 # Disegna il labirinto

@@ -9,19 +9,18 @@
     }
   ],
   "Result": "UNKNOWN",
-  "INTERRUPTED": 1,
   "Models": {
     "Number": 0,
     "More": "yes"
   },
   "Calls": 1,
   "Time": {
-    "Total": 63.706,
-    "Solve": 63.181,
+    "Total": 0.000,
+    "Solve": 0.000,
     "Model": 0.000,
     "Unsat": 0.000,
-    "CPU": 441.944
+    "CPU": 0.000
   },
   "Threads": 7,
-  "Winner": 7
+  "Winner": 0
 }

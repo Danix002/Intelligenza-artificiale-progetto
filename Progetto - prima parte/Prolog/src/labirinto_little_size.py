@@ -3,6 +3,7 @@ from tkinter import font
 from PIL import Image, ImageTk
 from pyswip import Prolog
 from initialization import create_interface
+import time
 
 final_strategy_path = "src/final_strategy/"
 base_strategy_path = "src/base_strategy/"
@@ -42,7 +43,7 @@ if(choice == "Opzione 3" or choice == "Opzione 4"):
         choice_goal = second_strategy_goal
 
 prolog.assertz(":-[knowledge_little_size]")
-prolog.assertz("size(5, 6)")
+prolog.assertz("size(6, 7)")
 
 w = "wall"
 h = "hammer"
@@ -304,7 +305,12 @@ def risolvi_labirinto():
 
     disegna_labirinto(canvas, labirinto)
 
+    start_time = time.time()
     first_result = get_first_solution(prolog, choice_goal)
+    end_time = time.time()
+    #round to 2 decimal places
+    execution_time = round(end_time - start_time, 2)
+ 
     final_visited = first_result['FinalVisited']
     if(choice == "Opzione 3" or choice == "Opzione 4"):
         final_visited = extract_monster_position(first_result['FinalVisited'])
@@ -317,6 +323,7 @@ def risolvi_labirinto():
         print("Nessuna soluzione trovata")
         # Button can be clicked
         button.config(state=tk.NORMAL)
+    print("Execution time: ", execution_time, " seconds")
 
 # Configurazione del canvas
 canvas = tk.Canvas(root, width=550, height=480)  # Dimensione del canvas aumentata

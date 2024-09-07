@@ -3,7 +3,7 @@ squadra(juventus, torinoAllianz).
 squadra(milan, milano).
 squadra(inter, milano).
 squadra(roma, roma).
-squadra(ostia, ostia).
+squadra(salernitana, salerno).
 squadra(torino, torino).
 squadra(bologna, bologna).
 squadra(udinese, udine).
