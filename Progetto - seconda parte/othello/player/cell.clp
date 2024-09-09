@@ -1,9 +1,15 @@
 ;(defmodule CELL ( export ?ALL ) (import CONTROL deftemplate ?ALL))
 
+; Template che consente di definire le possibili direzioni per identificare le celle nel quadrato attorno ad una data cella
+; le direzioni sono le seguenti:
+;            [(-1, -1), (-1, 0), (-1, +1),
+;             (0, -1),   cella    (0, +1),
+;             (+1, -1), (+1, 0), (+1, +1)] 
 (deftemplate cell-direction
     (slot row)
     (slot col)
 )
+
 
 (deftemplate counted-cell
   (slot step)
