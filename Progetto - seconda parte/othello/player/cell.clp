@@ -1,5 +1,3 @@
-;(defmodule CELL ( export ?ALL ) (import CONTROL deftemplate ?ALL))
-
 ; Template che consente di definire le possibili direzioni per identificare le celle nel quadrato attorno ad una data cella
 ; le direzioni sono le seguenti:
 ;            [(-1, -1), (-1, 0), (-1, +1),
@@ -10,13 +8,20 @@
     (slot col)
 )
 
-
+; Consente di gestire il conteggio della cella bianca nei bordi, per gli angoli.
+; infatti questi devono essere conteggiati sia rispetto alla riga che alla colonna.
 (deftemplate counted-cell
   (slot step)
   (slot row)
   (slot col)
 )
 
+; Contatori delle celle bianche presenti nei bordi. Template necessario per la scelta di mettere la pedina nelle celle di tipo C.
+; Gli attributi: 
+; - step: istanziato con il passo corrente al momento della creazione del contatore.
+; - position: può assumere come valori row o col. Insieme a index consente di identificare qual è il bordo per cui contiamo.
+; - index: consente di discrimenare tra le righe e colonne del bordo.
+; - count: contatore delle celle bianche sul bordo identificato.
 (deftemplate white-border-counter
   (slot step)
   (slot position) 
@@ -24,6 +29,15 @@
   (slot count)
 )
 
+; Contatore delle frontiere generate in corrispondenza della selezione di una detereminata cella. 
+; Il numero di frontiere generate è calcolato in base alle celle frontiere rese bianche a partire dalla start_cell verso la destination_cell.
+; Gli attributi sono i seguenti:
+; step: istanziato con il passo corrente al momento della creazione del contatore.
+; start_cell: contiene come valori, la riga e la colonna della cella di partenza.
+; destination_cell: contiene come valori, la riga e la colonna della cella di destinazione.
+; count_frontier contatore delle frontiere generate.
+; direction: contiene la direzione verso la quale ci spostiamo, le direzioni sono quelle specificate tramite il template (cell-direction).
+; distance: inizialmente contiene la distanza in celle tra la cella di partenza e quella di destinazione, viene decrementato ad ogni spostamento.    
 (deftemplate selected-cell-frontier-counter
   (slot step)
   (multislot start_cell)
@@ -33,6 +47,14 @@
   (slot distance)
 )
 
+; Template per la definizione di una cella. Gli attributi sono i seguenti:
+; - step: istanziato con il passo corrente al momento della creazione del contatore.
+; - row: riga su cui è posizionata la cella.
+; - col: colonna su cui è posizionata la cella.
+; - nearCorner: Costo associato alla cella.
+; - content: indica se la cella è vuota oppure occupata da una pedina nera o bianca.
+; - type: Indica il tipo della cella, 
+; C per le celle adiacenti all'angolo, COR per gli angoli, A e B per quelle centrali, X per le celle adiacenti sulla diagonale dell'angolo, F per le frontiere
 (deftemplate cell
   (slot step)
   (slot row)
@@ -197,6 +219,7 @@
             ;" col " (fact-slot-value ?direction col) crlf)
 )
 
+; Aggiunge il tipo X alle celle identificate nelle precondizioni
 (defrule set-cell-type-X (declare (salience 12))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
@@ -206,6 +229,7 @@
   (modify ?cl (type X))
 )
 
+; Aggiunge il tipo C alle celle identificate nelle precondizioni
 (defrule set-cell-type-C (declare(salience 12))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
@@ -222,6 +246,7 @@
   (modify ?cl (type C))
 )
 
+; Aggiunge il tipo B alle celle identificate nelle precondizioni
 (defrule set-cell-type-B (declare(salience 12))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
@@ -238,6 +263,7 @@
   (modify ?cl (type B))
 )
 
+; Aggiunge il tipo A alle celle identificate nelle precondizioni
 (defrule set-cell-type-A (declare(salience 12))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
@@ -254,6 +280,9 @@
   (modify ?cl (type A))
 )
 
+; Consente di identificare le celle frontiere. Una frontiera è una cella che ha almeno una cella empty adiacente.
+; Questa regola si attiva per ogni fatto direzione presente nei fatti e per ciascuno controlla se la cella adiacente verso la data direzione è vuota.
+; Nel caso in cui sia vero, viene assegnto il tipo F alla cella.
 (defrule set-cell-type-F (declare (salience 11))
     ?t <- (time (step ?s))
     ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
@@ -271,6 +300,7 @@
     ;(printout t "step " ?s " cell modified: row " ?r ", col " ?c ", because direction row " ?rdir ", col " ?cdir crlf)
 )
 
+; Aggiunge il tipo COR alle celle identificate nelle precondizioni
 (defrule set-cell-type-cor (declare (salience 12))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )

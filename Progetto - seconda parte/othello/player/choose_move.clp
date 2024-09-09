@@ -12,6 +12,7 @@
   (retract ?m)
 )
 
+; Consente di cancellare i fatti white-border-counter che hanno uno step vecchio rispetto a quello corrente
 (defrule forget-past-counters
   (declare (salience 12))
   ?t <- (time (step ?s))
@@ -21,6 +22,9 @@
   ;(printout t "Retracted past counter at step " ?s3 crlf)
 )
 
+; Consente di gestire l'avanzamento verso una direzione dalla cella di partenza verso quella di destinazione. 
+; Questo è il caso in cui la cella corrente è una frontiera e ha il colore nero, in questo caso oltre a ridurre la distanza in celle tra la start cell e la destination cell
+; incrementiamo il counter delle frontiere generate.
 (defrule increment-cells-selected-frontier-counter
   (declare (salience 10))
   ?t <- (time (step ?s))
@@ -44,6 +48,10 @@
   (modify ?scfc (count_frontier ?new-counter) (distance ?new-distance))
 )
 
+; Consente di gestire l'avanzamento verso una direzione dalla cella di partenza verso quella di destinazione. 
+; Questo è il caso in cui la cella corrente non è una frontiera e ha un colore diverso dal nero, 
+; in questo caso decrementiamo la distanza in celle tra la start cell e la destination cell e
+; avanziamo alla cella successiva tra la start_cell e la destination_cell.
 (defrule increment-cells-selected-no-frontier-counter
   (declare (salience 10))
   ?t <- (time (step ?s))
@@ -66,6 +74,9 @@
   (modify ?scfc (distance ?new-distance))
 )
 
+; Consente di contare il numero di celle bianche presenti nel bordo identificato dalla prima riga (riga 0), nel caso in cui la 
+; cella bianca non sia già stata contata (non è presente un counted cell), incrementiamo il contatore e asseriamo il fatto counted cell
+; per evitare che la cella sia contata più di una volta.
 (defrule count-white-border-cells-row-0 
   (declare (salience 11))
   ?t <- (time (step ?s))
@@ -80,6 +91,9 @@
   ;(printout t "step " ?s " Counted white cell at row 0 , col" ?col", new count: " (+ ?cnt 1) crlf)
 )
 
+; Consente di contare il numero di celle bianche presenti nel bordo identificato dall'ulima riga (riga 7), nel caso in cui la 
+; cella bianca non sia già stata contata (non è presente un counted cell), incrementiamo il contatore e asseriamo il fatto counted cell
+; per evitare che la cella sia contata più di una volta.
 (defrule count-white-border-cells-row-7 
   (declare (salience 11))
   ?t <- (time (step ?s))
@@ -94,6 +108,9 @@
   ;(printout t "step " ?s " Counted white cell at row  row 7 , col "?col", new count: " (+ ?cnt 1) crlf)
 )
 
+; Consente di contare il numero di celle bianche presenti nel bordo identificato dalla prima colonna (colonna 0), nel caso in cui la 
+; cella bianca non sia già stata contata (non è presente un counted cell), incrementiamo il contatore e asseriamo il fatto counted cell
+; per evitare che la cella sia contata più di una volta.
 (defrule count-white-border-cells-col-0 
   (declare (salience 11))
   ?t <- (time (step ?s))
@@ -108,6 +125,9 @@
   ;(printout t "step " ?s " Counted white cell at row " ?row ", col 0, new count: " (+ ?cnt 1) crlf)
 )
 
+; Consente di contare il numero di celle bianche presenti nel bordo identificato dall'ultima colonna (colonna 7), nel caso in cui la 
+; cella bianca non sia già stata contata (non è presente un counted cell), incrementiamo il contatore e asseriamo il fatto counted cell
+; per evitare che la cella sia contata più di una volta.
 (defrule count-white-border-cells-col-7 
   (declare (salience 11))
   ?t <- (time (step ?s))
@@ -122,6 +142,8 @@
   ;(printout t "step " ?s "Counted white cell at row " ?row ", col 7, new count: " (+ ?cnt 1) crlf)
 )
 
+; Consente di contare il numero di celle bianche presenti nell'angolo di un bordo  
+; In questo caso il counter viene incrementato sia per la colonna che per le righe
 (defrule count-white-border-cells-corner
   (declare (salience 11))
   ?t <- (time (step ?s))
@@ -146,6 +168,9 @@
   (modify ?t (step ?s))
 )
 
+; Consente di definire il costo di una cella sulla base della distanza tra la cella e gli angoli.
+; Viene calcolata la distanza rispetto a ciascuno di essi e successivamente viene presa la distanza minima.
+; Minore è la distanza selezionata, minore sarà il costo.
 (defrule update-cost-of-cell (declare (salience 9))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
@@ -159,6 +184,8 @@
   (modify ?cl (nearCorner ?new-cost))
 )
 
+; Consente di definire il costo delle celle adiacenti all'angolo, presenti sulla diagonale.
+; Il costo è molto alto poichè posizionare una pedina su questo angolo significa perdere un angolo
 (defrule update-cost-of-certain-cell-X (declare (salience 8))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
@@ -168,6 +195,9 @@
   (modify ?cl (nearCorner ?new-cost))
 )
 
+; Consente di definire il costo delle celle adiacenti all'angolo.
+; Qualora il nuemero di celle contenenti pedine bianche prsenti sullo stesso bordo della cella tipo C selezionata fosse minore di 3
+; La scelta di quella pedina comporta un rischio, pertanto il costo è alto.
 (defrule update-cost-of-certain-cell-C (declare (salience 8))
   ?t <- (time (step ?s))
   ?difficulty <- (game-difficulty (difficulty ?d&:(not (eq ?d easy))) )
@@ -182,6 +212,8 @@
   ;(printout t "modify cell c " ?r "col " ?c "with counter " ?cnt " and r " ?r crlf)
 )
 
+; Questa regola consente di aggiornare il costo di ogni cella in modo tale da tenere conto 
+; del numero di frontiere generate nel caso in cui si segliesse la mossa che posiziona una pedina bianca su quella cella.
 (defrule update-cell-selected-cost
   (declare (salience 7))
   ?difficulty <- (game-difficulty (difficulty ?d&:(eq ?d vhard)) )
@@ -194,6 +226,5 @@
   (bind ?new-cost (+ ?a ?counter))
   (modify ?scfc (distance -1))
   (modify ?cl (nearCorner ?new-cost))
-  
 )
 
