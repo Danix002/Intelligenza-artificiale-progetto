@@ -17,8 +17,8 @@ squadra(empoli, empoli).
 squadra(parma, parma).
 
 % Definizione delle giornate
-giornata(1..14, andata).
-giornata(15..28, ritorno).
+giornata(1..15, andata).
+giornata(16..30, ritorno).
 
 % Generatore di partite: seleziona esattamente 8 partite tra tutte le coppie di squadre diverse per ogni giornata
 8 { partita(Giornata, Squadra1, Squadra2) : 
@@ -42,8 +42,8 @@ giornata(15..28, ritorno).
 :- partita(Giornata, SquadraCasa, SquadraTrasferta), partita(Giornata2, SquadraTrasferta, SquadraCasa), giornata(Giornata, ritorno), giornata(Giornata2, ritorno).
 
 % Vincolo: la stessa squadra non deve giocare più di due partite consecutive in casa o in trasferta 
-:- partita(Giornata, SquadraCasa, _), partita(Giornata+1, SquadraCasa, _), partita(Giornata+2, SquadraCasa, _).
-:- partita(Giornata, _, SquadraTrasferta), partita(Giornata+1, _, SquadraTrasferta), partita(Giornata+2, _, SquadraTrasferta).
+:- partita(Giornata, SquadraCasa, _), partita(Giornata1, SquadraCasa, _), partita(Giornata2, SquadraCasa, _), Giornata1 = Giornata+1, Giornata2 = Giornata1+1.
+:- partita(Giornata, _, SquadraTrasferta), partita(Giornata1, _, SquadraTrasferta), partita(Giornata2, _, SquadraTrasferta), Giornata1 = Giornata+1, Giornata2 = Giornata1+1.
 
 % Vincolo: le squadre con lo stesso stadio non devono giocare in casa contemporaneamente nella stessa giornata
 :- partita(Giornata, SquadraCasa, _), squadra(SquadraCasa, Stadio), partita(Giornata, SquadraCasa1, _), squadra(SquadraCasa1, Stadio1), SquadraCasa != SquadraCasa1, Stadio = Stadio1.
